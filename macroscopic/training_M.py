@@ -96,7 +96,7 @@ _ = noise_pred_net.to(device)
 Train model
 """
 
-num_epochs = 100
+num_epochs = 75
 
 # Exponential Moving Average
 # accelerates training and improves stability
@@ -190,7 +190,7 @@ ema_noise_pred_net = noise_pred_net
 ema.copy_to(ema_noise_pred_net.parameters())
 
 #save weights
-path = 'checkpoints/t_M_6.pt'
+path = 'checkpoints/t_M_10.pt'
 torch.save(ema_noise_pred_net.state_dict(), path)
 print('Model saved to'+path)
 
@@ -209,5 +209,14 @@ print('Model saved to'+path)
 #t_M_3 (4,1,1) 50 epochs, same as t_M_2 but more training -> loss 0.0443
 #t_M_4 (4,1,1) 50 epochs, lr=1e-4 -> lr=5e-5 because 50 epochs does not do much better than 20 epochs -> loss 0.0448
 #t_M_5 (4,1,1) 75 epochs, lr=1e-4 -> loss 0.0449
-#t_M_6 (4,1,1) 100 epochs lr=1e-4 
+#t_M_6 (4,1,1) 75 epochs, lr=1e-4 and kernel_size = 3 instead of 5 -> loss 0.0423
+#t_M_7 (8,1,1) 75 epochs, lr=1e-4, kernel_size=3 -> loss 0.0425
+#t_M_8 (4,1,4) 75 epochs, lr=1e-4, kernel_size=3 -> loss similar
 
+#t_M_9 (4,1,1) 75 epochs, added an additional 90C to data in attempt to give it more weight -> loss 0.0432
+#it does seem that choosing the dataset is very important! i have to make a choice on how to balance the data, what matters?
+
+#t_M_10 (4,1,1) 75 epochs, removed additional 90C mice, but recomputed threat state for phase C -> loss 0.044
+
+
+ 

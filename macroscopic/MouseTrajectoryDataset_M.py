@@ -86,13 +86,13 @@ class MouseTrajectoryDataset(torch.utils.data.Dataset):
                  pred_horizon, obs_horizon, action_horizon):
 
         # read from pickle files
-        file = open(dataset_path+'actions_M_balanced.pickle', 'rb')
+        file = open(dataset_path+'actions_M_balanced3.pickle', 'rb')
         actions = pickle.load(file)
         file.close()
-        file = open(dataset_path+'states_M_balanced.pickle', 'rb')
+        file = open(dataset_path+'states_M_balanced3.pickle', 'rb')
         states = pickle.load(file)
         file.close()
-        file = open(dataset_path+'episode_ends_M_balanced.pickle', 'rb')
+        file = open(dataset_path+'episode_ends_M_balanced3.pickle', 'rb')
         episode_ends = pickle.load(file) # Marks one-past the last index for each episode
         file.close()
         # All demonstration episodes are concatinated in the first dimension N

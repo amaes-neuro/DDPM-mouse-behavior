@@ -42,18 +42,24 @@ def compute_cum_side_time(location):
 
       
 
-def compute_threat(mouse_id, concentration, path):
+def compute_threat(mouse_id, concentration, path, phase):
     file = open(path+'/points_nose_A'+'_'+concentration+'.pickle', 'rb')    
     points_A = pickle.load(file)
     file.close()
-    file = open(path+'/points_nose_B'+'_'+concentration+'.pickle', 'rb')    
-    points_B = pickle.load(file)
-    file.close()
+    if phase == 'B':
+        file = open(path+'/points_nose_B'+'_'+concentration+'.pickle', 'rb')    
+        points = pickle.load(file)
+        file.close()
+    elif phase == 'C':
+        file = open(path+'/points_nose_C'+'_'+concentration+'.pickle', 'rb')    
+        points = pickle.load(file)
+        file.close()
+
     points_A = points_A[mouse_id]
-    points_B = points_B[mouse_id]
-    ratio_B = np.sum(points_B[:,0]<40)/len(points_B)
+    points = points[mouse_id]
+    ratio = np.sum(points[:,0]<40)/len(points)
     ratio_A = np.sum(points_A[:,0]<40)/len(points_A)
-    return ratio_A-ratio_B #does it make more sense to divide those quantities?
+    return ratio_A-ratio #does it make more sense to divide those quantities?
 
 
     
@@ -82,7 +88,7 @@ def generate_space(concentration, phase, subsample):
         if phase=='A':
             agent_threat = np.zeros((len(agent_location),1))
         else:
-            agent_threat = compute_threat(i, concentration, path)*np.ones((len(agent_location),1))
+            agent_threat = compute_threat(i, concentration, path, phase)*np.ones((len(agent_location),1))
 
         states_ = np.hstack((np.reshape(agent_location,(np.size(agent_location),1)),agent_sides,total_time,food_present,agent_threat))
         
@@ -103,23 +109,29 @@ def main():
     idx_ends = []
     for i in range(len(phases)):
         for j in range(len(concentrations)):
-            if i == 0 and j>0:
+            if i == 0 and j<4:
                 continue
             else:
                 states_add,actions_add,idx_add = generate_space(concentrations[j], phases[i], 30)
                 states_list.append(states_add)
                 actions_list.append(actions_add)
                 idx_ends.append(idx_add)
-            
+                
+    #try to add one C-90 to make it match? if not i have to think about adding a state  
+    #states_add,actions_add,idx_add = generate_space('90', 'C', 30)
+    #states_list.append(states_add)
+    #actions_list.append(actions_add)
+    #idx_ends.append(idx_add)
+
     #write to files  
     states = np.vstack(states_list)
     actions = np.vstack(actions_list)
     idx_ends = np.hstack(idx_ends)
-    with open('data/states_M_balanced.pickle', 'wb') as file:
+    with open('data/states_M_balanced3.pickle', 'wb') as file:
         pickle.dump(np.float32(states), file)
-    with open('data/actions_M_balanced.pickle', 'wb') as file:
+    with open('data/actions_M_balanced3.pickle', 'wb') as file:
         pickle.dump(np.float32(actions), file)
-    with open('data/episode_ends_M_balanced.pickle', 'wb') as file:
+    with open('data/episode_ends_M_balanced3.pickle', 'wb') as file:
         pickle.dump(np.cumsum(idx_ends), file)
     print('Preprocessing done... Data saved.')
 
@@ -128,7 +140,9 @@ def main():
 if __name__ == "__main__":
     main() 
     
-
+#balanced is cutting out all but one group of phase A mice
+#balanced2 is with an additional 90C copied into the dataset
+#balanced3 is without additional 90C mice, but with threat state computed separete for B and C
 
 
 

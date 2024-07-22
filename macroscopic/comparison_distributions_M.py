@@ -110,8 +110,8 @@ for i in range(5):
     sides_synth_B.append(np.hstack(side_synth_right))
     
 plt.figure()    
-plt.violinplot([sides_B[i] for i in range(10)],[0.8,1.2,2.8,3.2,4.8,5.2,6.8,7.2,8.8,9.2],widths=0.3,showmeans=True)
-plt.violinplot([sides_synth_B[i] for i in range(10)],[1.8,2.2,3.8,4.2,5.8,6.2,7.8,8.2,9.8,10.2],widths=0.3,showmeans=True)
+plt.violinplot([sides_B[i] for i in range(len(sides_B))],[0.8,1.2,2.8,3.2,4.8,5.2,6.8,7.2,8.8,9.2],widths=0.3,showmeans=True)
+plt.violinplot([sides_synth_B[i] for i in range(len(sides_synth_B))],[1.8,2.2,3.8,4.2,5.8,6.2,7.8,8.2,9.8,10.2],widths=0.3,showmeans=True)
 plt.xticks(np.arange(10)+1,['Data','Model','Data','Model','Data','Model','Data','Model','Data','Model'])
 plt.xlabel('Phase B')
 plt.ylabel('Distribution of side dwell times [s]')
