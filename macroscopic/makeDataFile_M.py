@@ -30,13 +30,15 @@ from tqdm import tqdm
 
 def compute_cum_side_time(location):
     #this function computes the cumulative time in the same side
-    sides = np.zeros((len(location),1))
+    sides = np.zeros((len(location),2))
     for i in range(len(location)):
         
         if i>0 and location[i]!=location[i-1]:
-            sides[i] = 0
+            sides[i,0] = 0
+            sides[i,1] = sides[i-1,0]
         elif i>0:
-            sides[i] = sides[i-1] + 1
+            sides[i,0] = sides[i-1,0] + 1
+            sides[i,1] = sides[i-1,1]
 
     return sides
 
@@ -127,11 +129,11 @@ def main():
     states = np.vstack(states_list)
     actions = np.vstack(actions_list)
     idx_ends = np.hstack(idx_ends)
-    with open('data/states_M_balanced3.pickle', 'wb') as file:
+    with open('data/states_M_balanced4.pickle', 'wb') as file:
         pickle.dump(np.float32(states), file)
-    with open('data/actions_M_balanced3.pickle', 'wb') as file:
+    with open('data/actions_M_balanced4.pickle', 'wb') as file:
         pickle.dump(np.float32(actions), file)
-    with open('data/episode_ends_M_balanced3.pickle', 'wb') as file:
+    with open('data/episode_ends_M_balanced4.pickle', 'wb') as file:
         pickle.dump(np.cumsum(idx_ends), file)
     print('Preprocessing done... Data saved.')
 
@@ -143,7 +145,7 @@ if __name__ == "__main__":
 #balanced is cutting out all but one group of phase A mice
 #balanced2 is with an additional 90C copied into the dataset
 #balanced3 is without additional 90C mice, but with threat state computed separete for B and C
-
+#balanced4 is like 3, but with additional state recording last dwell time 
 
 
     

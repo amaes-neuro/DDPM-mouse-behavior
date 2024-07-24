@@ -62,7 +62,7 @@ print("batch['action'].shape", batch['action'].shape)
 Setup model
 """
 
-obs_dim = 5
+obs_dim = 6
 action_dim = 1
 
 # create network object
@@ -96,7 +96,7 @@ _ = noise_pred_net.to(device)
 Train model
 """
 
-num_epochs = 75
+num_epochs = 50
 
 # Exponential Moving Average
 # accelerates training and improves stability
@@ -190,7 +190,7 @@ ema_noise_pred_net = noise_pred_net
 ema.copy_to(ema_noise_pred_net.parameters())
 
 #save weights
-path = 'checkpoints/t_M_10.pt'
+path = 'checkpoints/t_M_11.pt'
 torch.save(ema_noise_pred_net.state_dict(), path)
 print('Model saved to'+path)
 
@@ -218,5 +218,6 @@ print('Model saved to'+path)
 
 #t_M_10 (4,1,1) 75 epochs, removed additional 90C mice, but recomputed threat state for phase C -> loss 0.044
 
+#t_M_11 (4,1,1) 50 epochs, balanced4 dataset (additional state) -> loss 0.0436
 
  

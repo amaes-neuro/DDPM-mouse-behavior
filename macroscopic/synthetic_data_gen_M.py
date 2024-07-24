@@ -19,7 +19,7 @@ from MouseTrajectoryDataset_M import normalize_data, unnormalize_data, MouseTraj
 from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 
 #load trained model
-path = 'checkpoints/t_M_3.pt'
+path = 'checkpoints/t_M_11.pt'
 if torch.cuda.is_available():
     state_dict = torch.load(path, map_location='cuda')
 else:
@@ -29,7 +29,7 @@ else:
 pred_horizon = 4
 obs_horizon = 1
 action_horizon = 1
-obs_dim = 5
+obs_dim = 6
 action_dim = 1
 
 # create network object
@@ -79,23 +79,23 @@ env.seed(10000)
 
 #load data to get threat state values
 dataset_path='data/'
-file = open(dataset_path+'states_M.pickle', 'rb')
+file = open(dataset_path+'states_M_balanced4.pickle', 'rb')
 states = pickle.load(file)
 file.close()
-file = open(dataset_path+'episode_ends_M.pickle', 'rb')
+file = open(dataset_path+'episode_ends_M_balanced4.pickle', 'rb')
 episode_ends = pickle.load(file) # Marks one-past the last index for each episode
 file.close()
 
-for j in range(6,129):
-    if j<43:
+for j in range(0,93):
+    if j<7:
         food = 0
         threat = 0
-    elif j>=43 and j<86:
+    elif j>=7 and j<50:
         food = 0
-        threat = states[episode_ends[j]-1,4]
-    elif j>= 86:
+        threat = states[episode_ends[j]-1,5]
+    elif j>= 50:
         food = 1
-        threat = states[episode_ends[j]-1,4]
+        threat = states[episode_ends[j]-1,5]
     
     if j == 0:
         max_steps = episode_ends[0]
@@ -190,7 +190,7 @@ for j in range(6,129):
                     break
                 
     #save trajectory
-    with open('data_synthetic_M/t_M_3/states_synthetic_M_'+str(j)+'.pickle', 'wb') as file:
+    with open('data_synthetic_M/t_M_11/states_synthetic_M_'+str(j)+'.pickle', 'wb') as file:
         pickle.dump(np.vstack(trajectory), file)
 
     

@@ -16,25 +16,26 @@ import matplotlib.pyplot as plt
 
 dataset_path='data/'
 # read from pickle files
-file = open(dataset_path+'actions_M.pickle', 'rb')
+file = open(dataset_path+'actions_M_balanced4.pickle', 'rb')
 actions = pickle.load(file)
 file.close()
-file = open(dataset_path+'states_M.pickle', 'rb')
+file = open(dataset_path+'states_M_balanced4.pickle', 'rb')
 states = pickle.load(file)
 file.close()
-file = open(dataset_path+'episode_ends_M.pickle', 'rb')
+file = open(dataset_path+'episode_ends_M_balanced4.pickle', 'rb')
 episode_ends = pickle.load(file) # Marks one-past the last index for each episode
 file.close()
 
 #the model
-model = 't_M_3'
+model = 't_M_11'
 
 #phase A
+nb_A = 7
 sides_A_left = []
 sides_A_right = []
 sides_synth_A_left = []
 sides_synth_A_right = []
-for i in range(len(episode_ends)//3):
+for i in range(nb_A):
     file = open('data_synthetic_M/'+model+'/states_synthetic_M_'+str(i)+'.pickle', 'rb')
     states_synth = pickle.load(file) 
     file.close()
@@ -82,7 +83,7 @@ for i in range(5):
     side_synth_left = []
     side_synth_right = []
     for j in range(concentrations[i]):
-        file = open('data_synthetic_M/'+model+'/states_synthetic_M_'+str(43+np.sum(concentrations[0:i])+j)+'.pickle', 'rb')
+        file = open('data_synthetic_M/'+model+'/states_synthetic_M_'+str(nb_A+np.sum(concentrations[0:i])+j)+'.pickle', 'rb')
         states_synth = pickle.load(file) 
         file.close()
         locs = states_synth[:,0]
@@ -94,8 +95,8 @@ for i in range(5):
             else:
                 side_synth_right.append(side_state[side_state_idx][k])
         
-        start_idx = episode_ends[43+np.sum(concentrations[0:i])+j-1]
-        end_idx = episode_ends[43+np.sum(concentrations[0:i])+j]   
+        start_idx = episode_ends[nb_A+np.sum(concentrations[0:i])+j-1]
+        end_idx = episode_ends[nb_A+np.sum(concentrations[0:i])+j]   
         locs = states[start_idx:end_idx,0]
         side_state = states[start_idx:end_idx,1] 
         side_state_idx = np.where(side_state[1:]-side_state[0:-1]<0)
@@ -128,7 +129,7 @@ for i in range(5):
     side_synth_left = []
     side_synth_right = []
     for j in range(concentrations[i]):
-        file = open('data_synthetic_M/'+model+'/states_synthetic_M_'+str(86+np.sum(concentrations[0:i])+j)+'.pickle', 'rb')
+        file = open('data_synthetic_M/'+model+'/states_synthetic_M_'+str(nb_A+43+np.sum(concentrations[0:i])+j)+'.pickle', 'rb')
         states_synth = pickle.load(file) 
         file.close()
         locs = states_synth[:,0]
@@ -140,8 +141,8 @@ for i in range(5):
             else:
                 side_synth_right.append(side_state[side_state_idx][k])
         
-        start_idx = episode_ends[86+np.sum(concentrations[0:i])+j-1]
-        end_idx = episode_ends[86+np.sum(concentrations[0:i])+j]   
+        start_idx = episode_ends[nb_A+43+np.sum(concentrations[0:i])+j-1]
+        end_idx = episode_ends[nb_A+43+np.sum(concentrations[0:i])+j]   
         locs = states[start_idx:end_idx,0]
         side_state = states[start_idx:end_idx,1] 
         side_state_idx = np.where(side_state[1:]-side_state[0:-1]<0)

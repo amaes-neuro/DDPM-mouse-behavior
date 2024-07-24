@@ -26,9 +26,9 @@ class MouseMEnv(gym.Env):
 
         # Observations are dictionaries with the agent's and the target's location.
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
-        self.observation_space = spaces.Box(low= np.array([0,0,0,0,0]), 
-                                            high= np.array([1,1200,1200,1,1]), 
-                                            shape=(5,), 
+        self.observation_space = spaces.Box(low= np.array([0,0,0,0,0,0]), 
+                                            high= np.array([1,1200,1200,1200,1,1]), 
+                                            shape=(6,), 
                                             dtype=np.float64)
 
 
@@ -59,13 +59,14 @@ class MouseMEnv(gym.Env):
     
 
     def _get_obs(self):
-        return np.hstack((self._agent_location,self._agent_side,self._agent_time,self._agent_food,self._agent_threat))
+        return np.hstack((self._agent_location,self._agent_side,self._agent_sideprev,self._agent_time,self._agent_food,self._agent_threat))
     
 
-    def reset(self,location=0, side=0, time=0, food=0, threat=0, seed=None, options=None):    
+    def reset(self,location=0, side=0, side_prev=0, time=0, food=0, threat=0, seed=None, options=None):    
         self._agent_location = location
         #reset sides
         self._agent_side = side
+        self._agent_sideprev = side_prev
         #reset time in box
         self._agent_time = time
         #reset hunger variable
@@ -89,6 +90,7 @@ class MouseMEnv(gym.Env):
             action = 1
         
         if self._agent_location != action:
+            self._agent_sideprev = self._agent_side
             self._agent_side = 0
             self._agent_location = action
         else:
