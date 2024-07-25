@@ -90,7 +90,7 @@ def generate_space(concentration, phase, subsample):
         if phase=='A':
             agent_threat = np.zeros((len(agent_location),1))
         else:
-            agent_threat = compute_threat(i, concentration, path, phase)*np.ones((len(agent_location),1))
+            agent_threat = int(concentration)*np.ones((len(agent_location),1))#compute_threat(i, concentration, path, phase)*np.ones((len(agent_location),1))
 
         states_ = np.hstack((np.reshape(agent_location,(np.size(agent_location),1)),agent_sides,total_time,food_present,agent_threat))
         
@@ -129,11 +129,11 @@ def main():
     states = np.vstack(states_list)
     actions = np.vstack(actions_list)
     idx_ends = np.hstack(idx_ends)
-    with open('data/states_M_balanced4.pickle', 'wb') as file:
+    with open('data/states_M_balanced5.pickle', 'wb') as file:
         pickle.dump(np.float32(states), file)
-    with open('data/actions_M_balanced4.pickle', 'wb') as file:
+    with open('data/actions_M_balanced5.pickle', 'wb') as file:
         pickle.dump(np.float32(actions), file)
-    with open('data/episode_ends_M_balanced4.pickle', 'wb') as file:
+    with open('data/episode_ends_M_balanced5.pickle', 'wb') as file:
         pickle.dump(np.cumsum(idx_ends), file)
     print('Preprocessing done... Data saved.')
 
@@ -146,7 +146,7 @@ if __name__ == "__main__":
 #balanced2 is with an additional 90C copied into the dataset
 #balanced3 is without additional 90C mice, but with threat state computed separete for B and C
 #balanced4 is like 3, but with additional state recording last dwell time 
-
+#balanced5 is with threat state 1-3-10-30-90, we have to run this naive test (otherwise also reduced baseline)
 
     
     

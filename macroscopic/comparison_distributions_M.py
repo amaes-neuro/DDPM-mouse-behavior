@@ -175,9 +175,9 @@ concentrations = np.array([8,10,9,9,7])
 
 #get location data phase A
 for i in range(5):
-    ev_ = np.zeros((concentrations[i],T))
-    for j in range(concentrations[i]):
-        file = open('data_synthetic_M/'+model+'/states_synthetic_M_'+str(np.sum(concentrations[0:i])+j)+'.pickle', 'rb')
+    ev_ = np.zeros((concentrations[4],T))
+    for j in range(concentrations[4]):
+        file = open('data_synthetic_M/'+model+'/states_synthetic_M_'+str(j)+'.pickle', 'rb')
         states_synth = pickle.load(file) 
         file.close()
         ev_[j,:] = states_synth[0:T,0] 
@@ -187,7 +187,7 @@ for i in range(5):
 for i in range(5):
     ev_ = np.zeros((concentrations[i],T))
     for j in range(concentrations[i]):
-        file = open('data_synthetic_M/'+model+'/states_synthetic_M_'+str(43+np.sum(concentrations[0:i])+j)+'.pickle', 'rb')
+        file = open('data_synthetic_M/'+model+'/states_synthetic_M_'+str(nb_A+np.sum(concentrations[0:i])+j)+'.pickle', 'rb')
         states_synth = pickle.load(file) 
         file.close()
 
@@ -198,7 +198,7 @@ for i in range(5):
 for i in range(5):
     ev_ = np.zeros((concentrations[i],T))
     for j in range(concentrations[i]):
-        file = open('data_synthetic_M/'+model+'/states_synthetic_M_'+str(86+np.sum(concentrations[0:i])+j)+'.pickle', 'rb')
+        file = open('data_synthetic_M/'+model+'/states_synthetic_M_'+str(nb_A+43+np.sum(concentrations[0:i])+j)+'.pickle', 'rb')
         states_synth = pickle.load(file) 
         file.close()
 
