@@ -64,6 +64,21 @@ def compute_threat(mouse_id, concentration, path, phase):
     return ratio_A-ratio #does it make more sense to divide those quantities?
 
 
+
+def get_location(points, walls):
+    locs = np.zeros(np.shape(points))
+    if points[0]<(walls[3,0]+walls[2,0])/2:
+        locs[0] = 1
+    for i in range(1,len(points)):
+        if points[i]>walls[3,0] and locs[i-1]==1:
+            locs[i] = 0
+        elif points[i]<walls[2,0] and locs[i-1]==0:
+            locs[i] = 1
+        else:
+            locs[i] = locs[i-1]
+    return locs
+
+
     
 def generate_space(concentration, phase, subsample):
     states = []
@@ -75,9 +90,12 @@ def generate_space(concentration, phase, subsample):
     file = open(path+'/points_nose_'+phase+'_'+concentration+'.pickle', 'rb')
     points = pickle.load(file)
     file.close()
-    
+    file = open(path+'/walls_'+phase+'_'+concentration+'.pickle', 'rb')
+    walls = pickle.load(file)
+    file.close()
+
     for i in tqdm(range(len(points))):
-        agent_location = 1*(points[i][0::subsample,0] < 40)
+        agent_location = get_location(points[i][0::subsample,0], walls[i])#1*(points[i][0::subsample,0] < 40)
         agent_action = agent_location[1:]
         agent_location = agent_location[0:-1]
         agent_sides = compute_cum_side_time(agent_location)
@@ -129,11 +147,11 @@ def main():
     states = np.vstack(states_list)
     actions = np.vstack(actions_list)
     idx_ends = np.hstack(idx_ends)
-    with open('data/states_M_balanced5.pickle', 'wb') as file:
+    with open('data/states_M_balanced6.pickle', 'wb') as file:
         pickle.dump(np.float32(states), file)
-    with open('data/actions_M_balanced5.pickle', 'wb') as file:
+    with open('data/actions_M_balanced6.pickle', 'wb') as file:
         pickle.dump(np.float32(actions), file)
-    with open('data/episode_ends_M_balanced5.pickle', 'wb') as file:
+    with open('data/episode_ends_M_balanced6.pickle', 'wb') as file:
         pickle.dump(np.cumsum(idx_ends), file)
     print('Preprocessing done... Data saved.')
 
@@ -148,6 +166,11 @@ if __name__ == "__main__":
 #balanced4 is like 3, but with additional state recording last dwell time 
 #balanced5 is with threat state 1-3-10-30-90, we have to run this naive test (otherwise also reduced baseline)
 
+#I will next try to see if the way switching is computed affects the distributions strongly.
+#My intuition is that in some experimental groups the mouse is often on the border between cages leading to more noisy switching.
+#I have to first look at the data alone, then if it makes a big difference create synthetic data using naive and behavioral threat encoding.
+#Finally, check if the additional state is necessary or if we can go back to five states.
+#balanced6 is with threat state 1-3-10-30-90, different switching calculation.
     
     
     
