@@ -44,7 +44,7 @@ def compute_cum_side_time(location):
 
       
 
-def compute_threat(mouse_id, concentration, path, phase):
+def compute_threat(mouse_id, concentration, path, phase, subsample, walls):
     file = open(path+'/points_nose_A'+'_'+concentration+'.pickle', 'rb')    
     points_A = pickle.load(file)
     file.close()
@@ -57,10 +57,10 @@ def compute_threat(mouse_id, concentration, path, phase):
         points = pickle.load(file)
         file.close()
 
-    points_A = points_A[mouse_id]
-    points = points[mouse_id]
-    ratio = np.sum(points[:,0]<40)/len(points)
-    ratio_A = np.sum(points_A[:,0]<40)/len(points_A)
+    points_A = points_A[mouse_id][0::subsample,0]
+    points = points[mouse_id][0::subsample,0]
+    ratio = np.sum(get_location(points, walls))/len(points)
+    ratio_A = np.sum(get_location(points_A, walls))/len(points_A)
     return ratio_A-ratio #does it make more sense to divide those quantities?
 
 
@@ -108,7 +108,7 @@ def generate_space(concentration, phase, subsample):
         if phase=='A':
             agent_threat = np.zeros((len(agent_location),1))
         else:
-            agent_threat = int(concentration)*np.ones((len(agent_location),1))#compute_threat(i, concentration, path, phase)*np.ones((len(agent_location),1))
+            agent_threat = compute_threat(i, concentration, path, phase, subsample, walls[i])*np.ones((len(agent_location),1))#int(concentration)*np.ones((len(agent_location),1))
 
         states_ = np.hstack((np.reshape(agent_location,(np.size(agent_location),1)),agent_sides,total_time,food_present,agent_threat))
         
@@ -170,7 +170,7 @@ if __name__ == "__main__":
 #My intuition is that in some experimental groups the mouse is often on the border between cages leading to more noisy switching.
 #I have to first look at the data alone, then if it makes a big difference create synthetic data using naive and behavioral threat encoding.
 #Finally, check if the additional state is necessary or if we can go back to five states.
-#balanced6 is with threat state 1-3-10-30-90, different switching calculation.
+#balanced6 is with behavioral encoded threat state, different switching calculation.
     
     
     
