@@ -70,12 +70,16 @@ def get_location(points, walls):
     if points[0]<(walls[3,0]+walls[2,0])/2:
         locs[0] = 1
     for i in range(1,len(points)):
+        if points[i]<(walls[3,0]+walls[2,0])/2:
+            locs[i] = 1
+        """
         if points[i]>walls[3,0] and locs[i-1]==1:
             locs[i] = 0
         elif points[i]<walls[2,0] and locs[i-1]==0:
             locs[i] = 1
         else:
             locs[i] = locs[i-1]
+        """
     return locs
 
 
@@ -147,11 +151,11 @@ def main():
     states = np.vstack(states_list)
     actions = np.vstack(actions_list)
     idx_ends = np.hstack(idx_ends)
-    with open('data/states_M_balanced6.pickle', 'wb') as file:
+    with open('data/states_M_balanced7.pickle', 'wb') as file:
         pickle.dump(np.float32(states), file)
-    with open('data/actions_M_balanced6.pickle', 'wb') as file:
+    with open('data/actions_M_balanced7.pickle', 'wb') as file:
         pickle.dump(np.float32(actions), file)
-    with open('data/episode_ends_M_balanced6.pickle', 'wb') as file:
+    with open('data/episode_ends_M_balanced7.pickle', 'wb') as file:
         pickle.dump(np.cumsum(idx_ends), file)
     print('Preprocessing done... Data saved.')
 
@@ -173,5 +177,16 @@ if __name__ == "__main__":
 #balanced6 is with behavioral encoded threat state, different switching calculation.
     
     
-    
+#SOME CONCLUSIONS:
+    #1. Balance is important
+    #2. Additional state with previous dwell time helps
+    #3. Naive threat encoding gives good performance at distributions but not over time.
+    #4. Different threat encoding for phase B and C gives good performance over time.
+    #5. Changing the switching criterion does not help. 
+
+#NEXT balanced7
+#1. go back to simple switching criterion.
+#2. Different normalization for time-related states
+
+
     

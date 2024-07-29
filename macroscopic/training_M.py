@@ -190,7 +190,7 @@ ema_noise_pred_net = noise_pred_net
 ema.copy_to(ema_noise_pred_net.parameters())
 
 #save weights
-path = 'checkpoints/t_M_12.pt'
+path = 'checkpoints/t_M_15.pt'
 torch.save(ema_noise_pred_net.state_dict(), path)
 print('Model saved to'+path)
 
@@ -221,3 +221,10 @@ print('Model saved to'+path)
 #t_M_11 (4,1,1) 50 epochs, balanced4 dataset (additional state) -> loss 0.0436
 
 #t_M_12 (4,1,1) 50 epochs, balanced5 dataset (naive threat state) -> loss 0.0446
+
+#t_M_13 (4,1,1) 50 epochs, balanced6 dataset (behavioral encoded threat state) -> loss 0.0368
+#t_M_14 (4,1,1) 100 epochs, " " " -> loss 0.0357
+
+#t_M_15 (4,1,1) 50 epochs, balanced7 dataset (simple switching, different normalization) -> loss 0.042
+
+

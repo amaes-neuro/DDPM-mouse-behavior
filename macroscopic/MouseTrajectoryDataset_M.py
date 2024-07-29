@@ -69,15 +69,28 @@ def get_data_stats(data):
     return stats
 
 def normalize_data(data, stats):
-    # nomalize to [0,1]
-    ndata = (data - stats['min']) / (stats['max'] - stats['min'])
-    # normalize to [-1, 1]
-    ndata = ndata * 2 - 1
+    # normalize to [0,1]
+    ndata = data
+    if ndata.shape[1] == 1:
+        ndata = (data - stats['min']) / (stats['max'] - stats['min'])
+    else: # i do not want to normalize the threat state (as a test)
+        ndata[:,:-1] = (data[:,:-1] - stats['min'][:-1]) / (stats['max'][:-1] - stats['min'][:-1])
+    # the states related to time remain in [0,1]
+    for i in range(ndata.shape[1]):
+        if i==0 or i==4 :
+            # normalize to [-1, 1]
+            ndata[:,i] = ndata[:,i] * 2 - 1
     return ndata
 
 def unnormalize_data(ndata, stats):
-    ndata = (ndata + 1) / 2
-    data = ndata * (stats['max'] - stats['min']) + stats['min']
+    data = ndata
+    for i in range(ndata.shape[1]):
+        if i==0 or i==4:
+            ndata = (ndata + 1) / 2
+    if ndata.shape[1] == 1:
+        data = ndata * (stats['max'] - stats['min']) + stats['min']
+    else: # i do not want to normalize the threat state (as a test)
+        data[:,:-1] = ndata[:,:-1] * (stats['max'][:-1] - stats['min'][:-1]) + stats['min'][:-1]
     return data
 
 # dataset
@@ -86,13 +99,13 @@ class MouseTrajectoryDataset(torch.utils.data.Dataset):
                  pred_horizon, obs_horizon, action_horizon):
 
         # read from pickle files
-        file = open(dataset_path+'actions_M_balanced4.pickle', 'rb')
+        file = open(dataset_path+'actions_M_balanced7.pickle', 'rb')
         actions = pickle.load(file)
         file.close()
-        file = open(dataset_path+'states_M_balanced4.pickle', 'rb')
+        file = open(dataset_path+'states_M_balanced7.pickle', 'rb')
         states = pickle.load(file)
         file.close()
-        file = open(dataset_path+'episode_ends_M_balanced4.pickle', 'rb')
+        file = open(dataset_path+'episode_ends_M_balanced7.pickle', 'rb')
         episode_ends = pickle.load(file) # Marks one-past the last index for each episode
         file.close()
         # All demonstration episodes are concatinated in the first dimension N
