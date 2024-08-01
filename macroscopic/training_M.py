@@ -140,7 +140,7 @@ with tqdm(range(num_epochs), desc='Epoch') as tglobal:
                 obs_cond = obs_cond.flatten(start_dim=1)
 
                 # I want to see if adding noise to obs_cond can help generalization
-                #obs_cond = obs_cond + torch.randn(obs_cond.shape, device=device)/20
+                obs_cond = obs_cond + torch.randn(obs_cond.shape, device=device)/20
 
                 # sample noise to add to actions
                 noise = torch.randn(naction.shape, device=device)
@@ -190,7 +190,7 @@ ema_noise_pred_net = noise_pred_net
 ema.copy_to(ema_noise_pred_net.parameters())
 
 #save weights
-path = 'checkpoints/t_M_15.pt'
+path = 'checkpoints/t_M_17.pt'
 torch.save(ema_noise_pred_net.state_dict(), path)
 print('Model saved to'+path)
 
@@ -226,5 +226,5 @@ print('Model saved to'+path)
 #t_M_14 (4,1,1) 100 epochs, " " " -> loss 0.0357
 
 #t_M_15 (4,1,1) 50 epochs, balanced7 dataset (simple switching, different normalization) -> loss 0.042
-
-
+#t_M_16 (4,1,1) 50 epochs, balanced7 dataset (simple switching, all [-1,1] normalized) -> 0.0427
+#t_M_17 (4,1,1) 50 epochs, balanced7 dataset (simple switching, [-1,1], added noise in states during training) -> loss 0.0426

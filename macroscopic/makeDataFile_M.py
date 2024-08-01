@@ -188,5 +188,6 @@ if __name__ == "__main__":
 #1. go back to simple switching criterion.
 #2. Different normalization for time-related states
 
+#Different normalization does not help performance..... Actually, it gives good results on the t-test and mannwhitneyu for phase C!
 
     
