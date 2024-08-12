@@ -53,7 +53,7 @@ def compute_threat(mouse_id, concentration, path, phase, subsample, walls):
         points = pickle.load(file)
         file.close()
     elif phase == 'C':
-        file = open(path+'/points_nose_C'+'_'+concentration+'.pickle', 'rb')    
+        file = open(path+'/points_nose_B'+'_'+concentration+'.pickle', 'rb')   #change this back to C if does not work 
         points = pickle.load(file)
         file.close()
 
@@ -151,11 +151,11 @@ def main():
     states = np.vstack(states_list)
     actions = np.vstack(actions_list)
     idx_ends = np.hstack(idx_ends)
-    with open('data/states_M_balanced7.pickle', 'wb') as file:
+    with open('data/states_M_balanced8.pickle', 'wb') as file:
         pickle.dump(np.float32(states), file)
-    with open('data/actions_M_balanced7.pickle', 'wb') as file:
+    with open('data/actions_M_balanced8.pickle', 'wb') as file:
         pickle.dump(np.float32(actions), file)
-    with open('data/episode_ends_M_balanced7.pickle', 'wb') as file:
+    with open('data/episode_ends_M_balanced8.pickle', 'wb') as file:
         pickle.dump(np.cumsum(idx_ends), file)
     print('Preprocessing done... Data saved.')
 
@@ -181,7 +181,7 @@ if __name__ == "__main__":
     #1. Balance is important
     #2. Additional state with previous dwell time helps
     #3. Naive threat encoding gives good performance at distributions but not over time.
-    #4. Different threat encoding for phase B and C gives good performance over time.
+    #4. Different threat encoding for phase B and C gives reasonable performance over time.
     #5. Changing the switching criterion does not help. 
 
 #NEXT balanced7
@@ -190,4 +190,5 @@ if __name__ == "__main__":
 
 #Different normalization does not help performance..... Actually, it gives good results on the t-test and mannwhitneyu for phase C!
 
-    
+#balanced8 - final try
+#simple switching, 6 states but the same threat for B and C    

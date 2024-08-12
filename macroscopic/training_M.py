@@ -107,7 +107,7 @@ ema = EMAModel(
     power=0.8)
 
 # Standard ADAM optimizer
-# Note that EMA parametesr are not optimized
+# Note that EMA parameters are not optimized
 optimizer = torch.optim.AdamW(
     params=noise_pred_net.parameters(),
     lr=1e-4, weight_decay=1e-6)
@@ -190,7 +190,7 @@ ema_noise_pred_net = noise_pred_net
 ema.copy_to(ema_noise_pred_net.parameters())
 
 #save weights
-path = 'checkpoints/t_M_17.pt'
+path = 'checkpoints/t_M_21.pt'
 torch.save(ema_noise_pred_net.state_dict(), path)
 print('Model saved to'+path)
 
@@ -228,3 +228,10 @@ print('Model saved to'+path)
 #t_M_15 (4,1,1) 50 epochs, balanced7 dataset (simple switching, different normalization) -> loss 0.042
 #t_M_16 (4,1,1) 50 epochs, balanced7 dataset (simple switching, all [-1,1] normalized) -> 0.0427
 #t_M_17 (4,1,1) 50 epochs, balanced7 dataset (simple switching, [-1,1], added noise in states during training) -> loss 0.0426
+#t_M_18 (4,1,1) 150 epochs, balanced7 dataset (""") -> loss 0.0416 TODO SYNTHETIC
+
+#SOME FINAL ARCHITECTURE CHANGES
+#t_M_19 (4,1,1) 200 epochs, balanced7 dataset (""") down dims [32,64,128] (2 orders of magnitude less params)  -> loss 0.0426
+#t_M_20 (4,1,1) 200 epochs, balanced7 dataset (""") down dims [32,64,128] 50 diffusion iters  -> loss 0.0421
+
+#t_M_21 (4,1,1) 50 epochs, balanced8 dataset -> loss 0.0426
