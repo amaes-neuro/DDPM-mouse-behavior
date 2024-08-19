@@ -19,7 +19,8 @@ from MouseTrajectoryDataset_M import normalize_data, unnormalize_data, MouseTraj
 from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 
 #load trained model
-path = 'checkpoints/t_M_1.pt'
+model = 't_M_24'
+path = 'checkpoints/'+model+'.pt'
 if torch.cuda.is_available():
     state_dict = torch.load(path, map_location='cuda')
 else:
@@ -61,7 +62,7 @@ dataset = MouseTrajectoryDataset(
 stats = dataset.stats
 
 #noise scheduler
-num_diffusion_iters = 100
+num_diffusion_iters = 50
 noise_scheduler = DDPMScheduler(
     num_train_timesteps=num_diffusion_iters,
     # the choise of beta schedule has big impact on performance
@@ -74,13 +75,12 @@ noise_scheduler = DDPMScheduler(
 )
 
 #set up loop
-threat_values = [0,0.05,0.1,0.15,0.25,0.35]
-samples = 50
+threat_values = [0,0.15,0.3,0.45]
+samples = 100
 time_steps = 80
-time_shift = 0
+time_shift = 100
+side_prev = 10
 env = MouseMEnv(render_mode='rgb_array')
-# use a seed >200 to avoid initial states seen in the training dataset
-env.seed(10000)
 
 for i in range(4*len(threat_values)):    
     
@@ -98,23 +98,23 @@ for i in range(4*len(threat_values)):
     
     curves = np.zeros((samples,time_steps))
     for p in tqdm(range(time_steps)):
-        #set up state
-        obs, info = env.reset(location = location, side = p, time = p+time_shift, food = food, threat = threat)
-        
-        obs_deque = collections.deque(
-            [obs] * obs_horizon, maxlen=obs_horizon)
-        B = 1
-        # stack the last obs_horizon number of observations
-        obs_seq = np.stack(obs_deque)
-        # normalize observation
-        nobs = normalize_data(obs_seq, stats=stats['obs'])
-        # device transfer
-        nobs = torch.from_numpy(nobs).to(device, dtype=torch.float32)
-        # reshape observation to (B,obs_horizon*obs_dim)
-        obs_cond = nobs.unsqueeze(0).flatten(start_dim=1)
 
         for j in range(samples):
-    
+            #set up state
+            obs, info = env.reset(location = location, side = np.random.randint(time_steps), side_prev=p, time = time_shift, food = food, threat = threat)
+        
+            obs_deque = collections.deque(
+                [obs] * obs_horizon, maxlen=obs_horizon)
+            B = 1
+            # stack the last obs_horizon number of observations
+            obs_seq = np.stack(obs_deque)
+            # normalize observation
+            nobs = normalize_data(obs_seq, stats=stats['obs'])
+            # device transfer
+            nobs = torch.from_numpy(nobs).to(device, dtype=torch.float32)
+            # reshape observation to (B,obs_horizon*obs_dim)
+            obs_cond = nobs.unsqueeze(0).flatten(start_dim=1) 
+            
             # infer action
             with torch.no_grad():
                 # initialize action from Guassian noise
@@ -150,10 +150,10 @@ for i in range(4*len(threat_values)):
             curves[j,p] = action[0]
             
     #save curve    
-    data_dict = {'state': np.array([location, time_shift, food, threat]), 'actions': curves}    
+    data_dict = {'state': np.array([location, side_prev, time_shift, food, threat]), 'actions': curves}    
     print('Save sampled actions in state:',data_dict['state'])
-    with open('data_model_curves_M/curve_M_'+str(i)+'.pickle', 'wb') as file:
-        pickle.dump(curves, file)
+    with open('data_model_curves_M/'+model+'/curve_M_'+str(i)+'.pickle', 'wb') as file:
+        pickle.dump(data_dict, file)
 
 #do not forget that the actions generated here are not binarized
 #in the subsequent plotting I need to binarize the actions

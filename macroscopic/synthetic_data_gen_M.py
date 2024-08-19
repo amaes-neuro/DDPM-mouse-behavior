@@ -19,7 +19,7 @@ from MouseTrajectoryDataset_M import normalize_data, unnormalize_data, MouseTraj
 from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 
 #load trained model
-model = 't_M_17'
+model = 't_M_24'
 path = 'checkpoints/'+model+'.pt'
 if torch.cuda.is_available():
     state_dict = torch.load(path, map_location='cuda')
@@ -30,7 +30,7 @@ else:
 pred_horizon = 4
 obs_horizon = 1
 action_horizon = 1
-obs_dim = 6
+obs_dim = 5
 action_dim = 1
 
 # create network object
@@ -62,7 +62,7 @@ dataset = MouseTrajectoryDataset(
 stats = dataset.stats
 
 #noise scheduler
-num_diffusion_iters = 100
+num_diffusion_iters = 50
 noise_scheduler = DDPMScheduler(
     num_train_timesteps=num_diffusion_iters,
     # the choise of beta schedule has big impact on performance
@@ -80,23 +80,23 @@ env.seed(10000)
 
 #load data to get threat state values
 dataset_path='data/'
-file = open(dataset_path+'states_M_balanced7.pickle', 'rb')
+file = open(dataset_path+'states_M_balanced9.pickle', 'rb')
 states = pickle.load(file)
 file.close()
-file = open(dataset_path+'episode_ends_M_balanced7.pickle', 'rb')
+file = open(dataset_path+'episode_ends_M_balanced9.pickle', 'rb')
 episode_ends = pickle.load(file) # Marks one-past the last index for each episode
 file.close()
 
-for j in range(0,93):
+for j in range(53,93):
     if j<7:
         food = 0
         threat = 0
     elif j>=7 and j<50:
         food = 0
-        threat = states[episode_ends[j]-1,5]
+        threat = states[episode_ends[j]-1,-1] 
     elif j>= 50:
         food = 1
-        threat = states[episode_ends[j]-1,5]
+        threat = states[episode_ends[j]-1,-1] 
     
     if j == 0:
         max_steps = episode_ends[0]
