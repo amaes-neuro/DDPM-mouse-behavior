@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Aug 19 13:47:09 2024
+Created on Fri Aug 16 11:56:45 2024
 
 Compare synthetic data with real data from the macroscopic model.
     1. Distributions of dwell times
     2. Evolution of probability in time
     
-This is for the case where there are only four states in the model.
+This is for the case when the cumulative time in side of cage is not part of the state space, but the previous time is.
 
 @author: ahm8208
 """
@@ -20,18 +20,18 @@ import matplotlib.pyplot as plt
 
 dataset_path='data/'
 # read from pickle files
-file = open(dataset_path+'actions_M_balanced10.pickle', 'rb')
+file = open(dataset_path+'actions_M_balanced9.pickle', 'rb')
 actions = pickle.load(file)
 file.close()
-file = open(dataset_path+'states_M_balanced10.pickle', 'rb')
+file = open(dataset_path+'states_M_balanced9.pickle', 'rb')
 states = pickle.load(file)
 file.close()
-file = open(dataset_path+'episode_ends_M_balanced10.pickle', 'rb')
+file = open(dataset_path+'episode_ends_M_balanced9.pickle', 'rb')
 episode_ends = pickle.load(file) # Marks one-past the last index for each episode
 file.close()
 
 #the model
-model = 't_M_26'
+model = 't_M_24'
 
 #phase A
 nb_A = 7
@@ -44,24 +44,26 @@ for i in range(nb_A):
     states_synth = pickle.load(file) 
     file.close()
     locs = states_synth[:,0]
-    idx = np.where(locs[1:]!=locs[0:-1])[0]
-    for j in range(len(idx)-1):
-        if locs[idx[j]] == 1:
-            sides_synth_A_left.append(idx[j+1]-idx[j])
+    side_state = states_synth[:,1] 
+    side_state_idx = np.where(side_state[1:]!=side_state[0:-1])
+    for j in range(len(side_state_idx[0])):
+        if locs[side_state_idx][j] == 1:
+            sides_synth_A_left.append(side_state[side_state_idx][j])
         else:
-            sides_synth_A_right.append(idx[j+1]-idx[j])
+            sides_synth_A_right.append(side_state[side_state_idx][j])
 
     start_idx = 0
     if i>0:
         start_idx = episode_ends[i-1]
     end_idx = episode_ends[i]
     locs = states[start_idx:end_idx,0]
-    idx = np.where(locs[1:]!=locs[0:-1])[0]
-    for j in range(len(idx)-1):
-        if  locs[idx[j]] == 1:
-            sides_A_left.append(idx[j+1]-idx[j])
+    side_state = states[start_idx:end_idx,1] 
+    side_state_idx = np.where(side_state[1:]!=side_state[0:-1])
+    for j in range(len(side_state_idx[0])):
+        if locs[side_state_idx][j] == 1:
+            sides_A_left.append(side_state[side_state_idx][j])
         else:
-            sides_A_right.append(idx[j+1]-idx[j])
+            sides_A_right.append(side_state[side_state_idx][j])
 
 plt.figure()    
 plt.violinplot([np.hstack(sides_A_left),np.hstack(sides_A_right)],[0.8,1.2],widths=0.3,showmeans=True)
@@ -89,22 +91,24 @@ for i in range(5):
         states_synth = pickle.load(file) 
         file.close()
         locs = states_synth[:,0]
-        idx = np.where(locs[1:]!=locs[0:-1])[0]
-        for k in range(len(idx)-1):
-            if locs[idx[k]] == 1:
-                side_synth_left.append(idx[k+1]-idx[k])
+        side_state = states_synth[:,1] 
+        side_state_idx = np.where(side_state[1:]!=side_state[0:-1])
+        for k in range(len(side_state_idx[0])):
+            if locs[side_state_idx][k] == 1:
+                side_synth_left.append(side_state[side_state_idx][k])
             else:
-                side_synth_right.append(idx[k+1]-idx[k])
+                side_synth_right.append(side_state[side_state_idx][k])
         
         start_idx = episode_ends[nb_A+np.sum(concentrations[0:i])+j-1]
         end_idx = episode_ends[nb_A+np.sum(concentrations[0:i])+j]   
         locs = states[start_idx:end_idx,0]
-        idx = np.where(locs[1:]!=locs[0:-1])[0]
-        for k in range(len(idx)-1):
-            if locs[idx[k]] == 1:
-                side_left.append(idx[k+1]-idx[k])
+        side_state = states[start_idx:end_idx,1] 
+        side_state_idx = np.where(side_state[1:]!=side_state[0:-1])
+        for k in range(len(side_state_idx[0])):
+            if locs[side_state_idx][k] == 1:
+                side_left.append(side_state[side_state_idx][k])
             else:
-                side_right.append(idx[k+1]-idx[k])
+                side_right.append(side_state[side_state_idx][k])
     sides_B.append(np.hstack(side_left))
     sides_B.append(np.hstack(side_right))
     sides_synth_B.append(np.hstack(side_synth_left))
@@ -133,22 +137,24 @@ for i in range(5):
         states_synth = pickle.load(file) 
         file.close()
         locs = states_synth[:,0]
-        idx = np.where(locs[1:]!=locs[0:-1])[0]
-        for k in range(len(idx)-1):
-            if locs[idx[k]] == 1:
-                side_synth_left.append(idx[k+1]-idx[k])
+        side_state = states_synth[:,1] 
+        side_state_idx = np.where(side_state[1:]!=side_state[0:-1])
+        for k in range(len(side_state_idx[0])):
+            if locs[side_state_idx][k] == 1:
+                side_synth_left.append(side_state[side_state_idx][k])
             else:
-                side_synth_right.append(idx[k+1]-idx[k])
+                side_synth_right.append(side_state[side_state_idx][k])
         
         start_idx = episode_ends[nb_A+43+np.sum(concentrations[0:i])+j-1]
         end_idx = episode_ends[nb_A+43+np.sum(concentrations[0:i])+j]   
         locs = states[start_idx:end_idx,0]
-        idx = np.where(locs[1:]!=locs[0:-1])[0]
-        for k in range(len(idx)-1):
-            if locs[idx[k]] == 1:
-                side_left.append(idx[k+1]-idx[k])
+        side_state = states[start_idx:end_idx,1] 
+        side_state_idx = np.where(side_state[1:]!=side_state[0:-1])
+        for k in range(len(side_state_idx[0])):
+            if locs[side_state_idx][k] == 1:
+                side_left.append(side_state[side_state_idx][k])
             else:
-                side_right.append(idx[k+1]-idx[k])
+                side_right.append(side_state[side_state_idx][k])
     sides_C.append(np.hstack(side_left))
     sides_C.append(np.hstack(side_right))
     sides_synth_C.append(np.hstack(side_synth_left))

@@ -62,7 +62,7 @@ print("batch['action'].shape", batch['action'].shape)
 Setup model
 """
 
-obs_dim = 6
+obs_dim = 4
 action_dim = 1
 
 # create network object
@@ -71,7 +71,7 @@ noise_pred_net = ConditionalUnet1D(
     global_cond_dim=obs_dim*obs_horizon
 )
 
-num_diffusion_iters = 100
+num_diffusion_iters = 50
 noise_scheduler = DDPMScheduler(
     num_train_timesteps=num_diffusion_iters,
     # the choise of beta schedule has big impact on performance
@@ -140,8 +140,12 @@ with tqdm(range(num_epochs), desc='Epoch') as tglobal:
                 obs_cond = obs_cond.flatten(start_dim=1)
 
                 # I want to see if adding noise to obs_cond can help generalization
-                obs_cond = obs_cond + torch.randn(obs_cond.shape, device=device)/20
-
+                add_ = torch.zeros(obs_cond.shape, device=device)
+                add_[1] = torch.randn(1,device=device)/10
+                #add_[2] = torch.randn(1,device=device)/15
+                obs_cond = obs_cond + add_
+                obs_cond = torch.clamp(obs_cond, min=-1, max=1)
+                
                 # sample noise to add to actions
                 noise = torch.randn(naction.shape, device=device)
 
@@ -190,7 +194,7 @@ ema_noise_pred_net = noise_pred_net
 ema.copy_to(ema_noise_pred_net.parameters())
 
 #save weights
-path = 'checkpoints/t_M_21.pt'
+path = 'checkpoints/t_M_26.pt'
 torch.save(ema_noise_pred_net.state_dict(), path)
 print('Model saved to'+path)
 
@@ -235,3 +239,15 @@ print('Model saved to'+path)
 #t_M_20 (4,1,1) 200 epochs, balanced7 dataset (""") down dims [32,64,128] 50 diffusion iters  -> loss 0.0421
 
 #t_M_21 (4,1,1) 50 epochs, balanced8 dataset -> loss 0.0426
+
+#only add noise to the state tracking duration in side of cage (keep simple switching and normalization)
+#t_M_22 (4,1,1) 50 epochs, balanced7 dataset 50 diffusion iters -> loss 0.041
+#The reason that the previous experiments were off in baseline is this difference in adding noise (or so it seems)
+#t_M_23 (4,1,1) 50 epochs, balanced7 50 diff iters, noise added to states 1 and 2
+
+#experiment with removing state 1 (cum time in side)
+#t_M_24 (4,1,1) 50 epochs, balanced9 50 diff iters, noise added to state 2 -> loss 0.0427
+#experiment with 4 states
+#t_M_25 (4,1,1) 50 epochs, balanced10 50 diff iters -> loss 0.0421
+#t_M_26 (4,1,1) 50 epochs, balanced10 50 diff iters, noise added to time -> loss 0.0422
+
