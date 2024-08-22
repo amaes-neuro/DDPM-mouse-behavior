@@ -53,7 +53,7 @@ def compute_threat(mouse_id, concentration, path, phase, subsample, walls):
         points = pickle.load(file)
         file.close()
     elif phase == 'C':
-        file = open(path+'/points_nose_B'+'_'+concentration+'.pickle', 'rb')   #change this back to C if does not work 
+        file = open(path+'/points_nose_C'+'_'+concentration+'.pickle', 'rb')   
         points = pickle.load(file)
         file.close()
 
@@ -114,8 +114,10 @@ def generate_space(concentration, phase, subsample):
         else:
             agent_threat = compute_threat(i, concentration, path, phase, subsample, walls[i])*np.ones((len(agent_location),1))#int(concentration)*np.ones((len(agent_location),1))
 
-        states_ = np.hstack((np.reshape(agent_location,(np.size(agent_location),1)),agent_sides,total_time,food_present,agent_threat))
-        
+        #states_ = np.hstack((np.reshape(agent_location,(np.size(agent_location),1)),np.reshape(agent_sides[:,1],(np.size(agent_location),1)),
+        #                     total_time,food_present,agent_threat))
+        states_ = np.hstack((np.reshape(agent_location,(np.size(agent_location),1)),
+                             total_time,food_present,agent_threat))
         states.append(states_)
         actions.append(np.reshape(agent_action,(np.size(agent_action),1)))
         idx_e.append(len(agent_location))
@@ -151,11 +153,11 @@ def main():
     states = np.vstack(states_list)
     actions = np.vstack(actions_list)
     idx_ends = np.hstack(idx_ends)
-    with open('data/states_M_balanced8.pickle', 'wb') as file:
+    with open('data/states_M_balanced10.pickle', 'wb') as file:
         pickle.dump(np.float32(states), file)
-    with open('data/actions_M_balanced8.pickle', 'wb') as file:
+    with open('data/actions_M_balanced10.pickle', 'wb') as file:
         pickle.dump(np.float32(actions), file)
-    with open('data/episode_ends_M_balanced8.pickle', 'wb') as file:
+    with open('data/episode_ends_M_balanced10.pickle', 'wb') as file:
         pickle.dump(np.cumsum(idx_ends), file)
     print('Preprocessing done... Data saved.')
 
@@ -190,5 +192,11 @@ if __name__ == "__main__":
 
 #Different normalization does not help performance..... Actually, it gives good results on the t-test and mannwhitneyu for phase C!
 
-#balanced8 - final try
-#simple switching, 6 states but the same threat for B and C    
+#balanced8 
+#simple switching, 6 states but the same threat for B and C -> does not work for 90C   
+
+#when we generate probability curves, it looks like the second state is not important!
+#balanced 9: no second state
+#somehow it looks like the previous state is also not important
+#balanced 10: only four states
+

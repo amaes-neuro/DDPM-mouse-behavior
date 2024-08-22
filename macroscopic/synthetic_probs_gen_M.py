@@ -19,7 +19,7 @@ from MouseTrajectoryDataset_M import normalize_data, unnormalize_data, MouseTraj
 from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 
 #load trained model
-model = 't_M_24'
+model = 't_M_26'
 path = 'checkpoints/'+model+'.pt'
 if torch.cuda.is_available():
     state_dict = torch.load(path, map_location='cuda')
@@ -30,7 +30,7 @@ else:
 pred_horizon = 4
 obs_horizon = 1
 action_horizon = 1
-obs_dim = 5
+obs_dim = 4
 action_dim = 1
 
 # create network object
@@ -77,9 +77,9 @@ noise_scheduler = DDPMScheduler(
 #set up loop
 threat_values = [0,0.15,0.3,0.45]
 samples = 100
-time_steps = 80
-time_shift = 100
-side_prev = 10
+time_steps = 90
+time_shift = 0
+side_prev = 0
 env = MouseMEnv(render_mode='rgb_array')
 
 for i in range(4*len(threat_values)):    
@@ -101,7 +101,7 @@ for i in range(4*len(threat_values)):
 
         for j in range(samples):
             #set up state
-            obs, info = env.reset(location = location, side = np.random.randint(time_steps), side_prev=p, time = time_shift, food = food, threat = threat)
+            obs, info = env.reset(location = location, side = 0, side_prev=0, time = 10*p, food = food, threat = threat)
         
             obs_deque = collections.deque(
                 [obs] * obs_horizon, maxlen=obs_horizon)
@@ -150,7 +150,7 @@ for i in range(4*len(threat_values)):
             curves[j,p] = action[0]
             
     #save curve    
-    data_dict = {'state': np.array([location, side_prev, time_shift, food, threat]), 'actions': curves}    
+    data_dict = {'state': np.array([location, food, threat]), 'actions': curves}    
     print('Save sampled actions in state:',data_dict['state'])
     with open('data_model_curves_M/'+model+'/curve_M_'+str(i)+'.pickle', 'wb') as file:
         pickle.dump(data_dict, file)

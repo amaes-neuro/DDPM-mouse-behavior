@@ -70,6 +70,7 @@ def get_data_stats(data):
 
 def normalize_data(data, stats):
     # normalize to [0,1]
+    """
     ndata = data
     if ndata.shape[1] == 1:
         ndata = (data - stats['min']) / (stats['max'] - stats['min'])
@@ -80,9 +81,13 @@ def normalize_data(data, stats):
         if i==0 or i==4 :
             # normalize to [-1, 1]
             ndata[:,i] = ndata[:,i] * 2 - 1
+    """
+    ndata = (data - stats['min']) / (stats['max'] - stats['min'])
+    ndata = ndata * 2 - 1   
     return ndata
 
 def unnormalize_data(ndata, stats):
+    """
     data = ndata
     for i in range(ndata.shape[1]):
         if i==0 or i==4:
@@ -91,6 +96,9 @@ def unnormalize_data(ndata, stats):
         data = ndata * (stats['max'] - stats['min']) + stats['min']
     else: # i do not want to normalize the threat state (as a test)
         data[:,:-1] = ndata[:,:-1] * (stats['max'][:-1] - stats['min'][:-1]) + stats['min'][:-1]
+    """
+    ndata = (ndata + 1) / 2
+    data = ndata * (stats['max'] - stats['min']) + stats['min']
     return data
 
 # dataset
@@ -99,13 +107,13 @@ class MouseTrajectoryDataset(torch.utils.data.Dataset):
                  pred_horizon, obs_horizon, action_horizon):
 
         # read from pickle files
-        file = open(dataset_path+'actions_M_balanced7.pickle', 'rb')
+        file = open(dataset_path+'actions_M_balanced10.pickle', 'rb')
         actions = pickle.load(file)
         file.close()
-        file = open(dataset_path+'states_M_balanced7.pickle', 'rb')
+        file = open(dataset_path+'states_M_balanced10.pickle', 'rb')
         states = pickle.load(file)
         file.close()
-        file = open(dataset_path+'episode_ends_M_balanced7.pickle', 'rb')
+        file = open(dataset_path+'episode_ends_M_balanced10.pickle', 'rb')
         episode_ends = pickle.load(file) # Marks one-past the last index for each episode
         file.close()
         # All demonstration episodes are concatinated in the first dimension N
