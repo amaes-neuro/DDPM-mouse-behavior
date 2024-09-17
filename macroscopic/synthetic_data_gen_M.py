@@ -17,6 +17,7 @@ from tqdm.auto import tqdm
 import numpy as np
 from MouseTrajectoryDataset_M import normalize_data, unnormalize_data, MouseTrajectoryDataset
 from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
+import os
 
 #load trained model
 model = 't_M_27'
@@ -25,7 +26,9 @@ if torch.cuda.is_available():
     state_dict = torch.load(path, map_location='cuda')
 else:
     state_dict = torch.load(path, map_location='cpu')
-
+if not os.path.exists('data_synthetic_M/'+model):
+    os.makedirs('data_synthetic_M/'+model)
+    
 #parameters
 pred_horizon = 4
 obs_horizon = 1

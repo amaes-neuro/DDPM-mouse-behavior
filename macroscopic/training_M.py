@@ -22,6 +22,7 @@ from diffusers.optimization import get_scheduler
 from tqdm.auto import tqdm
 import numpy as np
 import pickle
+import os
 
 """
 Load dataset
@@ -195,6 +196,8 @@ ema.copy_to(ema_noise_pred_net.parameters())
 
 #save weights
 path = 'checkpoints/t_M_27.pt'
+if not os.path.exists('checkpoints'):
+    os.makedirs('checkpoints')
 torch.save(ema_noise_pred_net.state_dict(), path)
 print('Model saved to'+path)
 
