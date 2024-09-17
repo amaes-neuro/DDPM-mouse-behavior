@@ -187,8 +187,6 @@ with tqdm(range(num_epochs), desc='Epoch') as tglobal:
                 epoch_loss.append(loss_cpu)
                 tepoch.set_postfix(loss=loss_cpu)
         tglobal.set_postfix(loss=np.mean(epoch_loss))
-        with open('checkpoints/training_status.pickle', 'wb') as file:
-            pickle.dump(epoch_idx, file)
 
         
 
