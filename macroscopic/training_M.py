@@ -33,6 +33,9 @@ pred_horizon = 4
 obs_horizon = 1
 action_horizon = 1
 
+# set path
+if not os.path.exists('checkpoints'):
+    os.makedirs('checkpoints')
 
 # create dataset from file
 dataset = MouseTrajectoryDataset(
@@ -196,8 +199,6 @@ ema.copy_to(ema_noise_pred_net.parameters())
 
 #save weights
 path = 'checkpoints/t_M_27.pt'
-if not os.path.exists('checkpoints'):
-    os.makedirs('checkpoints')
 torch.save(ema_noise_pred_net.state_dict(), path)
 print('Model saved to'+path)
 
