@@ -254,5 +254,5 @@ print('Model saved to'+path)
 #t_M_26 (4,1,1) 50 epochs, balanced10 50 diff iters, noise added to time -> loss 0.0422
 
 #experiment with 4 states, discretizing time in minute bins
-#t_M_27 (4,1,1) 50 epochs, balanced11 50 diff iters -> loss
+#t_M_27 (4,1,1) 50 epochs, balanced11 50 diff iters -> loss 0.044
 
