@@ -90,7 +90,7 @@ def generate_space(concentration, phase, subsample):
     idx_e = []
     
     #load data files
-    path = 'C:\\Users\\ahm8208\\OneDrive - Northwestern University\\Documents\\behavior_diffusion_project\\data_rotated_shifted'
+    path = 'C:\\Users\\amade\\OneDrive - The Scripps Research Institute\\Documents\\Diffusion_project\\DDPM-mouse-behavior\\data_rotated_shifted'
     file = open(path+'/points_nose_'+phase+'_'+concentration+'.pickle', 'rb')
     points = pickle.load(file)
     file.close()
@@ -108,7 +108,8 @@ def generate_space(concentration, phase, subsample):
         else:
             food_present = np.zeros((len(agent_location),1))
         total_time = np.zeros((len(agent_location),1))
-        total_time[:,0] = np.linspace(0,len(agent_location)-1,len(agent_location))
+        #total_time[:,0] = np.linspace(0,len(agent_location)-1,len(agent_location))
+        total_time[:,0] = np.round(np.linspace(0,len(agent_location)-1,len(agent_location))/60)
         if phase=='A':
             agent_threat = np.zeros((len(agent_location),1))
         else:
@@ -153,11 +154,11 @@ def main():
     states = np.vstack(states_list)
     actions = np.vstack(actions_list)
     idx_ends = np.hstack(idx_ends)
-    with open('data/states_M_balanced10.pickle', 'wb') as file:
+    with open('data/states_M_balanced11.pickle', 'wb') as file:
         pickle.dump(np.float32(states), file)
-    with open('data/actions_M_balanced10.pickle', 'wb') as file:
+    with open('data/actions_M_balanced11.pickle', 'wb') as file:
         pickle.dump(np.float32(actions), file)
-    with open('data/episode_ends_M_balanced10.pickle', 'wb') as file:
+    with open('data/episode_ends_M_balanced11.pickle', 'wb') as file:
         pickle.dump(np.cumsum(idx_ends), file)
     print('Preprocessing done... Data saved.')
 
@@ -199,4 +200,4 @@ if __name__ == "__main__":
 #balanced 9: no second state
 #somehow it looks like the previous state is also not important
 #balanced 10: only four states
-
+#balanced 11: only four states, and the time state is discretized in one minute bins

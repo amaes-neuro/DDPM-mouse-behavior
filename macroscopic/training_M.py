@@ -194,7 +194,7 @@ ema_noise_pred_net = noise_pred_net
 ema.copy_to(ema_noise_pred_net.parameters())
 
 #save weights
-path = 'checkpoints/t_M_26.pt'
+path = 'checkpoints/t_M_27.pt'
 torch.save(ema_noise_pred_net.state_dict(), path)
 print('Model saved to'+path)
 
@@ -250,4 +250,7 @@ print('Model saved to'+path)
 #experiment with 4 states
 #t_M_25 (4,1,1) 50 epochs, balanced10 50 diff iters -> loss 0.0421
 #t_M_26 (4,1,1) 50 epochs, balanced10 50 diff iters, noise added to time -> loss 0.0422
+
+#experiment with 4 states, discretizing time in minute bins
+#t_M_27 (4,1,1) 50 epochs, balanced11 50 diff iters -> loss
 

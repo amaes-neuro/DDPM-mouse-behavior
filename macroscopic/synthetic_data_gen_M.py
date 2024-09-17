@@ -19,7 +19,7 @@ from MouseTrajectoryDataset_M import normalize_data, unnormalize_data, MouseTraj
 from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 
 #load trained model
-model = 't_M_26'
+model = 't_M_27'
 path = 'checkpoints/'+model+'.pt'
 if torch.cuda.is_available():
     state_dict = torch.load(path, map_location='cuda')
@@ -80,10 +80,10 @@ env.seed(10000)
 
 #load data to get threat state values
 dataset_path='data/'
-file = open(dataset_path+'states_M_balanced10.pickle', 'rb')
+file = open(dataset_path+'states_M_balanced11.pickle', 'rb')
 states = pickle.load(file)
 file.close()
-file = open(dataset_path+'episode_ends_M_balanced10.pickle', 'rb')
+file = open(dataset_path+'episode_ends_M_balanced11.pickle', 'rb')
 episode_ends = pickle.load(file) # Marks one-past the last index for each episode
 file.close()
 
