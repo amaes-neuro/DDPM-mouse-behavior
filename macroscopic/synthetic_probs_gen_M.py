@@ -17,14 +17,20 @@ from tqdm.auto import tqdm
 import numpy as np
 from MouseTrajectoryDataset_M import normalize_data, unnormalize_data, MouseTrajectoryDataset
 from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
+import os
+import sys
 
 #load trained model
-model = 't_M_26'
+model = sys.argv[1]
+dataset_name = sys.argv[2]
+
 path = 'checkpoints/'+model+'.pt'
 if torch.cuda.is_available():
     state_dict = torch.load(path, map_location='cuda')
 else:
     state_dict = torch.load(path, map_location='cpu')
+if not os.path.exists('data_model_curves_M/'+model):
+    os.makedirs('data_model_curves_M/'+model)
 
 #parameters
 pred_horizon = 4
@@ -56,7 +62,8 @@ dataset = MouseTrajectoryDataset(
     dataset_path='data/',
     pred_horizon=pred_horizon,
     obs_horizon=obs_horizon,
-    action_horizon=action_horizon
+    action_horizon=action_horizon,
+    name=dataset_name
 )
 # save training data statistics (min, max) for each dim
 stats = dataset.stats

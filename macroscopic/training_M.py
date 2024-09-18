@@ -23,10 +23,15 @@ from tqdm.auto import tqdm
 import numpy as np
 import pickle
 import os
+import sys
+
 
 """
 Load dataset
 """
+#model
+model = sys.argv[1]
+dataset_name = sys.argv[2]
 
 # parameters
 pred_horizon = 4
@@ -42,7 +47,8 @@ dataset = MouseTrajectoryDataset(
     dataset_path='data/',
     pred_horizon=pred_horizon,
     obs_horizon=obs_horizon,
-    action_horizon=action_horizon
+    action_horizon=action_horizon,
+    name=dataset_name
 )
 # save training data statistics (min, max) for each dim
 stats = dataset.stats
@@ -196,7 +202,7 @@ ema_noise_pred_net = noise_pred_net
 ema.copy_to(ema_noise_pred_net.parameters())
 
 #save weights
-path = 'checkpoints/t_M_27.pt'
+path = 'checkpoints/'+model+'.pt'
 torch.save(ema_noise_pred_net.state_dict(), path)
 print('Model saved to'+path)
 

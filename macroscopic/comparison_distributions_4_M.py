@@ -16,22 +16,24 @@ This is for the case where there are only four states in the model.
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
-
+#import sys #i will run this in spyder mostly so i can do it manually
 
 dataset_path='data/'
+#the model
+model = 't_M_27'
+dataset_name = 'balanced11'
 # read from pickle files
-file = open(dataset_path+'actions_M_balanced10.pickle', 'rb')
+file = open(dataset_path+'actions_M_'+dataset_name+'.pickle', 'rb')
 actions = pickle.load(file)
 file.close()
-file = open(dataset_path+'states_M_balanced10.pickle', 'rb')
+file = open(dataset_path+'states_M_'+dataset_name+'.pickle', 'rb')
 states = pickle.load(file)
 file.close()
-file = open(dataset_path+'episode_ends_M_balanced10.pickle', 'rb')
+file = open(dataset_path+'episode_ends_M_'+dataset_name+'.pickle', 'rb')
 episode_ends = pickle.load(file) # Marks one-past the last index for each episode
 file.close()
 
-#the model
-model = 't_M_26'
+
 
 #phase A
 nb_A = 7
