@@ -27,25 +27,25 @@ class Mouse2DEnv(gym.Env):
 
         # Observations are dictionaries with the agent's and the target's location.
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
-        self.observation_space = spaces.Box(low= np.concatenate( (np.array([-1, -25]) , np.zeros((18,)) , np.zeros((7,))) ), 
-                                            high= np.concatenate( (np.array([86, 15]), 150*np.ones((18,)) , 3200*np.ones((7,))) ), 
-                                            shape=(27,), 
+        self.observation_space = spaces.Box(low= np.concatenate( (np.array([-1.169, -22.87]) , np.zeros((3,))) ), 
+                                            high= np.concatenate( (np.array([85.61, 16.52]) , 3200*np.ones((3,))) ), 
+                                            shape=(5,), 
                                             dtype=np.float64)
 
 
         # We have one continuous action (sign determines left or right)
-        self.action_space = spaces.Box(low=np.array([-30,-25]), 
-                                       high=np.array([35,25]), 
+        self.action_space = spaces.Box(low=np.array([-32,-21]), 
+                                       high=np.array([37,21]), 
                                        shape=(2,), 
                                        dtype=np.float64)
 
         self.subsample = 10 #this can change, maybe do not hardcode
         #average points that make up the corners of the box in the dataset
-        self.walls = [(-0.90,13.0),(35.53,14.88),(34.11,1.88),(51.00,1.68),(50.03,14.94),(85.83,12.31),
-                      (85.83,-22.69),(49.54,-24.40),(50.23,-11.48),(35.01,-10.94),(35.23,-24.07),(-0.66,-21.24)] #this is static, the box does not change over time
+        self.walls = [(-1.169,14.47),(35.33,16.47),(33.915,3.4086),(50.7458,3.1977),(49.80,16.520),(85.61,13.88),
+                      (85.61,-21.118),( 49.36,-22.87),(50.07,-9.905),(34.75,-9.34),(35.04,-22.576),(-0.87,-19.694)] #this is static, the box does not change over time
 
         self.closed_box = self.walls
-        self.closed_box.append( (-0.90,13.0) ) #make sure the box is closed
+        self.closed_box.append( (-1.169,14.47) ) #make sure the box is closed
         self.closed_box = shapely.LineString( self.closed_box )
 
         self.box_path = Path( np.array(self.walls) )
@@ -69,9 +69,9 @@ class Mouse2DEnv(gym.Env):
     
 
     def _get_obs(self):
-        return np.hstack((self._agent_location,self._agent_sensory_field,self._agent_direction,
-                          self._agent_side,self._agent_time,self._agent_food,self._agent_threat))
-    
+        #return np.hstack((self._agent_location,self._agent_sensory_field,self._agent_direction,
+        #                  self._agent_side,self._agent_time,self._agent_food,self._agent_threat))
+        return np.hstack((self._agent_location,self._agent_time,self._agent_food,self._agent_threat))
 
     def reset(self,location=None, direction= np.array([0,0]), side= np.array([0,0]), 
               time=0, food=0, threat=0, seed=None, options=None):    

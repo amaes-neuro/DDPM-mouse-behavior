@@ -22,10 +22,20 @@ from diffusers.optimization import get_scheduler
 from tqdm.auto import tqdm
 import numpy as np
 import pickle
+import sys
+import os
 
 """
 Load dataset
 """
+#model
+model = sys.argv[1]
+dataset_name = sys.argv[2]
+
+# set path
+if not os.path.exists('checkpoints'):
+    os.makedirs('checkpoints')
+
 
 # parameters
 pred_horizon = 4
@@ -38,7 +48,8 @@ dataset = MouseTrajectoryDataset(
     dataset_path='data/',
     pred_horizon=pred_horizon,
     obs_horizon=obs_horizon,
-    action_horizon=action_horizon
+    action_horizon=action_horizon,
+    name=dataset_name
 )
 # save training data statistics (min, max) for each dim
 stats = dataset.stats
@@ -63,7 +74,7 @@ Setup model
 """
 
 obs_dim = 5
-action_dim = 1
+action_dim = 2
 
 # create network object
 noise_pred_net = ConditionalUnet1D(
@@ -71,7 +82,7 @@ noise_pred_net = ConditionalUnet1D(
     global_cond_dim=obs_dim*obs_horizon
 )
 
-num_diffusion_iters = 100
+num_diffusion_iters = 50
 noise_scheduler = DDPMScheduler(
     num_train_timesteps=num_diffusion_iters,
     # the choise of beta schedule has big impact on performance
@@ -96,7 +107,7 @@ _ = noise_pred_net.to(device)
 Train model
 """
 
-num_epochs = 100
+num_epochs = 50
 
 # Exponential Moving Average
 # accelerates training and improves stability
@@ -179,8 +190,6 @@ with tqdm(range(num_epochs), desc='Epoch') as tglobal:
                 epoch_loss.append(loss_cpu)
                 tepoch.set_postfix(loss=loss_cpu)
         tglobal.set_postfix(loss=np.mean(epoch_loss))
-        with open('checkpoints/training_status.pickle', 'wb') as file:
-            pickle.dump(epoch_idx, file)
 
         
 
@@ -190,7 +199,7 @@ ema_noise_pred_net = noise_pred_net
 ema.copy_to(ema_noise_pred_net.parameters())
 
 #save weights
-path = 'checkpoints/t_3.pt'
+path = 'checkpoints/'+model+'.pt'
 torch.save(ema_noise_pred_net.state_dict(), path)
 print('Model saved to'+path)
 
@@ -200,14 +209,6 @@ print('Model saved to'+path)
 #
 #Question: should the dataset be normalized?
 
-#t1: (4,1,4) 4 epochs
-#t2: (4,1,4) 20 epochs
-#t3: (4,1,1) 20 epochs
+#t1: (4,1,1) balanced1, 50 epochs
 
-#t_M_1 (4,1,1) 20 epochs -> after generating synthetic data it seems to do very well on phase A, and then increasingly bad
-#t_M_2 (4,1,1) 20 epochs, probability of 75% to skip a phase A training batch to balance the dataset -> loss 0.0452
-#t_M_3 (4,1,1) 50 epochs, same as t_M_2 but more training -> loss 0.0443
-#t_M_4 (4,1,1) 50 epochs, lr=1e-4 -> lr=5e-5 because 50 epochs does not do much better than 20 epochs -> loss 0.0448
-#t_M_5 (4,1,1) 75 epochs, lr=1e-4 -> loss 0.0449
-#t_M_6 (4,1,1) 100 epochs lr=1e-4 
 

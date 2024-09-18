@@ -90,21 +90,43 @@ def clip_to_box(point, box):
             point[i] = np.array([projection[0].x,projection[0].y])
     return point
       
-    
 
-def compute_threat(mouse_id, concentration, path):
+def compute_threat(mouse_id, concentration, path, walls, phase):
     file = open(path+'/points_nose_A'+'_'+concentration+'.pickle', 'rb')    
     points_A = pickle.load(file)
     file.close()
-    file = open(path+'/points_nose_B'+'_'+concentration+'.pickle', 'rb')    
-    points_B = pickle.load(file)
-    file.close()
-    points_A = points_A[mouse_id]
-    points_B = points_B[mouse_id]
-    ratio_B = np.sum(points_B[:,0]<40)/len(points_B)
-    ratio_A = np.sum(points_A[:,0]<40)/len(points_A)
-    return ratio_A-ratio_B #does it make more sense to divide those quantities?
+    if phase == 'B':
+        file = open(path+'/points_nose_B'+'_'+concentration+'.pickle', 'rb')    
+        points = pickle.load(file)
+        file.close()
+    elif phase == 'C':
+        file = open(path+'/points_nose_C'+'_'+concentration+'.pickle', 'rb')   
+        points = pickle.load(file)
+        file.close()
 
+    points_A = points_A[mouse_id][:,0]
+    points = points[mouse_id][:,0]
+    ratio = np.sum(get_location(points, walls))/len(points)
+    ratio_A = np.sum(get_location(points_A, walls))/len(points_A)
+    return ratio_A-ratio #does it make more sense to divide those quantities?
+
+
+def get_location(points, walls):
+    locs = np.zeros(np.shape(points))
+    if points[0]<(walls[3,0]+walls[2,0])/2:
+        locs[0] = 1
+    for i in range(1,len(points)):
+        if points[i]<(walls[3,0]+walls[2,0])/2:
+            locs[i] = 1
+        """
+        if points[i]>walls[3,0] and locs[i-1]==1:
+            locs[i] = 0
+        elif points[i]<walls[2,0] and locs[i-1]==0:
+            locs[i] = 1
+        else:
+            locs[i] = locs[i-1]
+        """
+    return locs
 
     
 def generate_space(concentration, phase, subsample):
@@ -113,7 +135,7 @@ def generate_space(concentration, phase, subsample):
     idx_e = []
     
     #load data files
-    path = 'C:\\Users\\amade\\OneDrive - Northwestern University\\Documents\\behavior_diffusion_project\\data_rotated_shifted'
+    path = 'C:\\Users\\amade\\OneDrive - The Scripps Research Institute\\Documents\\Diffusion_project\\DDPM-mouse-behavior\\data_rotated_shifted'
     file = open(path+'/points_nose_'+phase+'_'+concentration+'.pickle', 'rb')
     points = pickle.load(file)
     file.close()
@@ -137,10 +159,12 @@ def generate_space(concentration, phase, subsample):
         if phase=='A':
             agent_threat = np.zeros((len(agent_location),1))
         else:
-            agent_threat = compute_threat(i, concentration, path)*np.ones((len(agent_location),1))
+            agent_threat = compute_threat(i, concentration, path, box, phase)*np.ones((len(agent_location),1))
         
-        states_ = np.hstack((agent_location,agent_sensory_field,agent_directions,
-                             agent_sides,total_time,food_present,agent_threat))
+        #states_ = np.hstack((agent_location,agent_sensory_field,agent_directions,
+        #                     agent_sides,total_time,food_present,agent_threat))
+        states_ = np.hstack((agent_location,total_time,food_present,agent_threat))
+
         
         states.append(states_)
         actions.append(agent_action)
@@ -159,20 +183,23 @@ def main():
     idx_ends = []
     for i in range(len(phases)):
         for j in range(len(concentrations)):
-            states_add,actions_add,idx_add = generate_space(concentrations[j], phases[i], 10)
-            states_list.append(states_add)
-            actions_list.append(actions_add)
-            idx_ends.append(idx_add)
+            if i == 0 and j<4:
+                continue
+            else:
+                states_add,actions_add,idx_add = generate_space(concentrations[j], phases[i], 10)
+                states_list.append(states_add)
+                actions_list.append(actions_add)
+                idx_ends.append(idx_add)
             
     #write to files  
     states = np.vstack(states_list)
     actions = np.vstack(actions_list)
     idx_ends = np.vstack(idx_ends)
-    with open('data/states.pickle', 'wb') as file:
+    with open('data/states_balanced1.pickle', 'wb') as file:
         pickle.dump(np.float32(states), file)
-    with open('data/actions.pickle', 'wb') as file:
+    with open('data/actions_balanced1.pickle', 'wb') as file:
         pickle.dump(np.float32(actions), file)
-    with open('data/episode_ends.pickle', 'wb') as file:
+    with open('data/episode_ends_balanced1.pickle', 'wb') as file:
         pickle.dump(np.cumsum(idx_ends), file)
     print('Preprocessing done... Data saved.')
 
@@ -181,6 +208,10 @@ if __name__ == "__main__":
     main() 
     
 
+#balanced indicates that we have tossed away most of the baseline in the training data
+#we will try many types of data
+
+#balanced1: 5 states (current locaction, time, food presence, TMT)
 
 
 
