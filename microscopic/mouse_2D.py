@@ -109,7 +109,7 @@ class Mouse2DEnv(gym.Env):
     
     def step(self, action):
         new_loc = self._agent_location + action #+ np.array([action[0]*np.random.randn()/10,action[1]*np.random.randn()/10])#i try to add noise to see if you get out of the stereotyped trajectories
-        if (new_loc<40) != (self._agent_location<40):
+        if (new_loc[0]<40) != (self._agent_location[0]<40):
             self._agent_side = 0
         if self.box_path.contains_point( new_loc ):
             self._agent_location = new_loc
