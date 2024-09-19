@@ -82,8 +82,8 @@ class Mouse2DEnv(gym.Env):
             self._agent_location = self.sample_initial_location()
         # Compute sensory field
         agent_sensory_field = self.compute_sensory_field(self._agent_location)
-        dist_idx = np.argpartition(agent_sensory_field,6,axis=-1)
-        self._agent_sensory_field = np.mean(np.take_along_axis(agent_sensory_field,dist_idx,axis=-1)[:,:6],1)
+        dist_idx = np.sort(agent_sensory_field)
+        self._agent_sensory_field = np.mean(dist_idx[0:6])
         #reset direction
         self._agent_direction = direction
         #reset sides
@@ -115,9 +115,9 @@ class Mouse2DEnv(gym.Env):
             self._agent_location = np.array([projection[0].x,projection[0].y])
             
         agent_sensory_field = self.compute_sensory_field(self._agent_location)
-        dist_idx = np.argpartition(agent_sensory_field,6,axis=-1)
-        self._agent_sensory_field = np.mean(np.take_along_axis(agent_sensory_field,dist_idx,axis=-1)[:,:6],1)
-
+        dist_idx = np.sort(agent_sensory_field)
+        self._agent_sensory_field = np.mean(dist_idx[0:6])
+        
         if action[0]<0:
             self._agent_direction[0] = self._agent_direction[0] + 1
             self._agent_direction[1] = 0
