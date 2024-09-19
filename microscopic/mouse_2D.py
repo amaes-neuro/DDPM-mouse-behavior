@@ -27,9 +27,9 @@ class Mouse2DEnv(gym.Env):
 
         # Observations are dictionaries with the agent's and the target's location.
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
-        self.observation_space = spaces.Box(low= np.concatenate( (np.array([-1.169, -22.87]) , np.zeros((4,))) ), 
-                                            high= np.concatenate( (np.array([85.61, 16.52]) , 3200*np.ones((4,))) ), 
-                                            shape=(6,), 
+        self.observation_space = spaces.Box(low= np.concatenate( (np.array([-1.169, -22.87]) , np.zeros((5,))) ), 
+                                            high= np.concatenate( (np.array([85.61, 16.52]) , 3200*np.ones((5,))) ), 
+                                            shape=(7,), 
                                             dtype=np.float64)
 
 
@@ -71,9 +71,10 @@ class Mouse2DEnv(gym.Env):
     def _get_obs(self):
         #return np.hstack((self._agent_location,self._agent_sensory_field,self._agent_direction,
         #                  self._agent_side,self._agent_time,self._agent_food,self._agent_threat))
-        return np.hstack((self._agent_location,self._agent_sensory_field,self._agent_time,self._agent_food,self._agent_threat))
+        return np.hstack((self._agent_location,self._agent_sensory_field,self._agent_side,
+                          self._agent_time,self._agent_food,self._agent_threat))
 
-    def reset(self,location=None, direction= np.array([0,0]), side= np.array([0,0]), 
+    def reset(self,location=None, direction= np.array([0,0]), side= 0, 
               time=0, food=0, threat=0, seed=None, options=None):    
         if location is not None:
             self._agent_location = location
@@ -108,6 +109,8 @@ class Mouse2DEnv(gym.Env):
     
     def step(self, action):
         new_loc = self._agent_location + action #+ np.array([action[0]*np.random.randn()/10,action[1]*np.random.randn()/10])#i try to add noise to see if you get out of the stereotyped trajectories
+        if (new_loc<40) != (self._agent_location<40):
+            self._agent_side = 0
         if self.box_path.contains_point( new_loc ):
             self._agent_location = new_loc
         else:     
@@ -125,13 +128,7 @@ class Mouse2DEnv(gym.Env):
             self._agent_direction[1] = self._agent_direction[1] + 1
             self._agent_direction[0] = 0
 
-        if self._agent_location[0]<40:
-            self._agent_side[0] = self._agent_side[0] + 1
-            self._agent_side[1] = 0
-        else:
-            self._agent_side[1] = self._agent_side[1] + 1
-            self._agent_side[0] = 0
-
+        self._agent_side = self._agent_side + 1
         self._agent_time = self._agent_time + 1
         
         #food present and threat are constants        
