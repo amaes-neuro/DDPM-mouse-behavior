@@ -27,9 +27,9 @@ class Mouse2DEnv(gym.Env):
 
         # Observations are dictionaries with the agent's and the target's location.
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
-        self.observation_space = spaces.Box(low= np.concatenate( (np.array([-1.169, -22.87]) , np.zeros((3,))) ), 
-                                            high= np.concatenate( (np.array([85.61, 16.52]) , 3200*np.ones((3,))) ), 
-                                            shape=(5,), 
+        self.observation_space = spaces.Box(low= np.concatenate( (np.array([-1.169, -22.87]) , np.zeros((4,))) ), 
+                                            high= np.concatenate( (np.array([85.61, 16.52]) , 3200*np.ones((4,))) ), 
+                                            shape=(6,), 
                                             dtype=np.float64)
 
 
@@ -71,7 +71,7 @@ class Mouse2DEnv(gym.Env):
     def _get_obs(self):
         #return np.hstack((self._agent_location,self._agent_sensory_field,self._agent_direction,
         #                  self._agent_side,self._agent_time,self._agent_food,self._agent_threat))
-        return np.hstack((self._agent_location,self._agent_time,self._agent_food,self._agent_threat))
+        return np.hstack((self._agent_location,self._agent_sensory_field,self._agent_time,self._agent_food,self._agent_threat))
 
     def reset(self,location=None, direction= np.array([0,0]), side= np.array([0,0]), 
               time=0, food=0, threat=0, seed=None, options=None):    
@@ -112,7 +112,9 @@ class Mouse2DEnv(gym.Env):
             projection = shapely.ops.nearest_points(self.closed_box,shapely.Point((new_loc[0],new_loc[1])))
             self._agent_location = np.array([projection[0].x,projection[0].y])
             
-        self._agent_sensory_field = self.compute_sensory_field(self._agent_location)
+        agent_sensory_field = self.compute_sensory_field(self._agent_location)
+        dist_idx = np.argpartition(agent_sensory_field,6,axis=-1)
+        self._agent_sensory_field = np.mean(np.take_along_axis(agent_sensory_field,dist_idx,axis=-1)[:,:6],1)
 
         if action[0]<0:
             self._agent_direction[0] = self._agent_direction[0] + 1
