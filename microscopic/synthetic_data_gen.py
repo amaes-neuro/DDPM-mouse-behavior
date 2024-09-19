@@ -118,7 +118,7 @@ for j in range(0,93):
     obs_deque = collections.deque(
         [obs] * obs_horizon, maxlen=obs_horizon)
     # save visualization and rewards
-    imgs = [env.render()]
+    #imgs = [env.render()]
     trajectory = [obs]
     rewards = list()
     done = False
@@ -184,7 +184,7 @@ for j in range(0,93):
                 # and reward/vis
                 trajectory.append(obs)
                 rewards.append(reward)
-                imgs.append(env.render())
+                #imgs.append(env.render())
     
                 # update progress bar
                 step_idx += 1

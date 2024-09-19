@@ -147,6 +147,9 @@ def generate_space(concentration, phase, subsample):
         box = walls[i]
         agent_location = points[i][0::subsample]
         agent_location = clip_to_box(agent_location, box)
+        agent_avgx = np.convolve(agent_location[:,0], np.ones(30)/30, mode='valid')
+        agent_avgy = np.convolve(agent_location[:,1], np.ones(30)/30, mode='valid')
+        agent_location = agent_location[28:,:]
         agent_action = agent_location[1:]-agent_location[0:-1]
         agent_location = agent_location[0:-1]
         agent_sensory_field, agent_directions, agent_sides = compute_multiple_states(agent_location, box, agent_action)
@@ -161,9 +164,14 @@ def generate_space(concentration, phase, subsample):
         else:
             agent_threat = compute_threat(i, concentration, path, box, phase)*np.ones((len(agent_location),1))
         
+        dist_idx = np.argpartition(agent_sensory_field,6,axis=-1)
+        walls_distance = np.mean(np.take_along_axis(agent_sensory_field,dist_idx,axis=-1)[:,:6],1)
+        walls_distance = np.reshape(walls_distance,(len(walls_distance),1))
         #states_ = np.hstack((agent_location,agent_sensory_field,agent_directions,
         #                     agent_sides,total_time,food_present,agent_threat))
-        states_ = np.hstack((agent_location,total_time,food_present,agent_threat))
+        cum_sid = np.reshape(agent_sides[:,0]+agent_sides[:,1],(len(agent_sides),1))
+        agent_avg = np.vstack((agent_avgx,agent_avgy)).T
+        states_ = np.hstack((agent_location,walls_distance, agent_avg,total_time,food_present,agent_threat))
 
         
         states.append(states_)
@@ -195,11 +203,11 @@ def main():
     states = np.vstack(states_list)
     actions = np.vstack(actions_list)
     idx_ends = np.vstack(idx_ends)
-    with open('data/states_balanced1.pickle', 'wb') as file:
+    with open('data/states_balanced4.pickle', 'wb') as file:
         pickle.dump(np.float32(states), file)
-    with open('data/actions_balanced1.pickle', 'wb') as file:
+    with open('data/actions_balanced4.pickle', 'wb') as file:
         pickle.dump(np.float32(actions), file)
-    with open('data/episode_ends_balanced1.pickle', 'wb') as file:
+    with open('data/episode_ends_balanced4.pickle', 'wb') as file:
         pickle.dump(np.cumsum(idx_ends), file)
     print('Preprocessing done... Data saved.')
 
@@ -211,10 +219,11 @@ if __name__ == "__main__":
 #balanced indicates that we have tossed away most of the baseline in the training data
 #we will try many types of data
 
-#balanced1: 5 states (current locaction, time, food presence, TMT)
-
-
-
+#balanced1: 5 states (current location, time, food presence, TMT)
+#balanced2: 6 states (current location, wall distance, time, food presence, TMT)
+#balanced3: 7 states (current location, wall distance, cum time in side, time, food presence, TMT)
+#balanced4: 8 states (current location, wall distance, moving avg of location 10s, time, food presence, TMT))
+#attention: moving average cuts away first ten seconds of data
     
     
     
