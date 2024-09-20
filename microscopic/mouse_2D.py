@@ -27,9 +27,9 @@ class Mouse2DEnv(gym.Env):
 
         # Observations are dictionaries with the agent's and the target's location.
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
-        self.observation_space = spaces.Box(low= np.concatenate( (np.array([-1.169, -22.87]) , np.zeros((5,))) ), 
-                                            high= np.concatenate( (np.array([85.61, 16.52]) , 3200*np.ones((5,))) ), 
-                                            shape=(7,), 
+        self.observation_space = spaces.Box(low= np.concatenate( (np.array([-1.169, -22.87]) , 0, np.array([-1.169, -22.87]),np.zeros((3,))) ), 
+                                            high= np.concatenate( (np.array([85.61, 16.52]) , 100, np.array([85.61, 16.52]),3200*np.ones((3,))) ), 
+                                            shape=(8,), 
                                             dtype=np.float64)
 
 
@@ -71,16 +71,20 @@ class Mouse2DEnv(gym.Env):
     def _get_obs(self):
         #return np.hstack((self._agent_location,self._agent_sensory_field,self._agent_direction,
         #                  self._agent_side,self._agent_time,self._agent_food,self._agent_threat))
-        return np.hstack((self._agent_location,self._agent_sensory_field,self._agent_side,
+        return np.hstack((self._agent_location,self._agent_sensory_field,self._agent_locavg,
                           self._agent_time,self._agent_food,self._agent_threat))
 
-    def reset(self,location=None, direction= np.array([0,0]), side= 0, 
+    def reset(self,location=None, loc_avg=None, direction= np.array([0,0]), side= 0, 
               time=0, food=0, threat=0, seed=None, options=None):    
         if location is not None:
             self._agent_location = location
         else:
             # Choose the agent's location uniformly at random
             self._agent_location = self.sample_initial_location()
+        if loc_avg is not None:
+            self._agent_locavg = loc_avg
+        else:
+            self._agent_locavg = self._agent_location
         # Compute sensory field
         agent_sensory_field = self.compute_sensory_field(self._agent_location)
         dist_idx = np.sort(agent_sensory_field)
@@ -120,6 +124,7 @@ class Mouse2DEnv(gym.Env):
         agent_sensory_field = self.compute_sensory_field(self._agent_location)
         dist_idx = np.sort(agent_sensory_field)
         self._agent_sensory_field = np.mean(dist_idx[0:6])
+        self._agent_locavg = (1-1/30)*self._agent_locavg + self._agent_location/30
         
         if action[0]<0:
             self._agent_direction[0] = self._agent_direction[0] + 1

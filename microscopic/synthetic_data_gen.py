@@ -35,7 +35,7 @@ if not os.path.exists('data_synthetic/'+model):
 pred_horizon = 4
 obs_horizon = 1
 action_horizon = 1
-obs_dim = 7
+obs_dim = 8
 action_dim = 2
 
 # create network object
@@ -107,12 +107,17 @@ for j in range(0,93):
     if j == 0:
         max_steps = episode_ends[0]
         location = states[0,0:2]
+        mov_avg = states[0,3:5]
     else:
         max_steps = episode_ends[j]-episode_ends[j-1]
         location = states[episode_ends[j-1],0:2]
-        
+        mov_avg = states[episode_ends[j-1],3:5]
+
     # get first observation, conditioned on threat level (TMT concentration)
-    obs, info = env.reset(location = location, food = food, threat = threat)
+    if obs_dim==8:
+        obs, info = env.reset(location = location, loc_avg = mov_avg, food = food, threat = threat)
+    else:
+        obs, info = env.reset(location = location, food = food, threat = threat)
     
     # keep a queue of last steps of observations
     obs_deque = collections.deque(

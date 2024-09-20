@@ -73,7 +73,7 @@ print("batch['action'].shape", batch['action'].shape)
 Setup model
 """
 
-obs_dim = 5
+obs_dim = 8
 action_dim = 2
 
 # create network object
@@ -210,5 +210,8 @@ print('Model saved to'+path)
 #Question: should the dataset be normalized?
 
 #t1: (4,1,1) balanced1, 50 epochs
+#t2: (4,1,1) balanced2, 50 epochs
+#t3: (4,1,1) balanced3, 50 epochs
+#t4: (4,1,1) balanced4, 50 epochs
 
 
