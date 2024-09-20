@@ -27,8 +27,8 @@ class Mouse2DEnv(gym.Env):
 
         # Observations are dictionaries with the agent's and the target's location.
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
-        self.observation_space = spaces.Box(low= np.concatenate( (np.array([-1.169, -22.87]) , 0, np.array([-1.169, -22.87]),np.zeros((3,))) ), 
-                                            high= np.concatenate( (np.array([85.61, 16.52]) , 100, np.array([85.61, 16.52]),3200*np.ones((3,))) ), 
+        self.observation_space = spaces.Box(low= np.concatenate( (np.array([-1.169, -22.87]) , np.array([0, -1.169, -22.87]),np.zeros((3,))) ), 
+                                            high= np.concatenate( (np.array([85.61, 16.52]) , np.array([100, 85.61, 16.52]),3200*np.ones((3,))) ), 
                                             shape=(8,), 
                                             dtype=np.float64)
 
