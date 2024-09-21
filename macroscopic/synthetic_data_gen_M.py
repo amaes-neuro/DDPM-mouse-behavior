@@ -35,7 +35,7 @@ if not os.path.exists('data_synthetic_M/'+model):
 pred_horizon = 4
 obs_horizon = 1
 action_horizon = 1
-obs_dim = 4
+obs_dim = 5
 action_dim = 1
 
 # create network object
