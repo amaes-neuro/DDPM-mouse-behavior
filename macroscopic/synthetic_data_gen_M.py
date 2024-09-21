@@ -94,6 +94,7 @@ episode_ends = pickle.load(file) # Marks one-past the last index for each episod
 file.close()
 
 for j in range(0,93):
+    
     if j<7:
         food = 0
         threat = 0
@@ -107,12 +108,14 @@ for j in range(0,93):
     if j == 0:
         max_steps = episode_ends[0]
         location = states[0,0]
+        time_vector = states[0,1:4]
     else:
         max_steps = episode_ends[j]-episode_ends[j-1]
         location = states[episode_ends[j-1],0]
+        time_vector = states[episode_ends[j]-1,1:4]
         
     # get first observation, conditioned on threat level (TMT concentration)
-    obs, info = env.reset(location = location, food = food, threat = threat)
+    obs, info = env.reset(location = location, time_vec=time_vector, food = food, threat = threat)
     
     # keep a queue of last steps of observations
     obs_deque = collections.deque(
