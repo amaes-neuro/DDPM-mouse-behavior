@@ -112,7 +112,7 @@ for j in range(0,93):
     else:
         max_steps = episode_ends[j]-episode_ends[j-1]
         location = states[episode_ends[j-1],0]
-        time_vector = states[episode_ends[j]-1,1:4]
+        time_vector = states[episode_ends[j-1],1:4]
         
     # get first observation, conditioned on threat level (TMT concentration)
     obs, info = env.reset(location = location, time_vec=time_vector, food = food, threat = threat)
