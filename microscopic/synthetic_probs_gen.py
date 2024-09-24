@@ -186,7 +186,7 @@ for i in range(4*len(threat_values)):
         curves[p,:,:] = np.vstack(trajectory)[:,0:2]
             
     #save curve    
-    data_dict = {'state': np.array([location, food, threat]), 'actions': curves}    
+    data_dict = {'state': np.array([location[0], location[1], food, threat]), 'actions': curves}    
     print('Save sampled actions in state:',data_dict['state'])
     with open('data_model_curves/'+model+'/curve_'+str(i)+'.pickle', 'wb') as file:
         pickle.dump(data_dict, file)
