@@ -165,24 +165,21 @@ for i in range(4*len(threat_values)):
             action = action_pred[start:end,:]
             # (action_horizon, action_dim)
     
-            # execute action_horizon number of steps
-            # without replanning
-            for i in range(len(action)):
-                # stepping env
-                obs, reward, done, _, info = env.step(action[i])
-                # save observations
-                obs_deque.append(obs)
-                trajectory.append(obs)
+            # stepping env
+            obs, reward, done, _, info = env.step(action[0])
+            # save observations
+            obs_deque.append(obs)
+            trajectory.append(obs)
     
-                # update progress bar
-                step_idx += 1
-                pbar.update(1)
-                pbar.set_postfix(reward=reward)
-                if step_idx >= time_steps:
-                    done = True
-                    env.close()
-                if done:
-                    break
+            # update progress bar
+            step_idx += 1
+            pbar.update(1)
+            pbar.set_postfix(reward=reward)
+            if step_idx >= time_steps:
+                done = True
+                env.close()
+            if done:
+                break
         
     #save trajectory
     curves[i,:,:] = np.vstack(trajectory)[:,0:2]
