@@ -39,7 +39,7 @@ if not os.path.exists('data_model_curves/'+model+'/samples'):
 pred_horizon = 4
 obs_horizon = 1
 action_horizon = 1
-obs_dim = 8
+obs_dim = 6
 action_dim = 2
 
 # create network object
