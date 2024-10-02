@@ -190,6 +190,10 @@ with tqdm(range(num_epochs), desc='Epoch') as tglobal:
                 epoch_loss.append(loss_cpu)
                 tepoch.set_postfix(loss=loss_cpu)
         tglobal.set_postfix(loss=np.mean(epoch_loss))
+        if epoch_idx%20 == 0: #save checkpoints every 20 epochs
+            ema_noise_pred_net = noise_pred_net
+            path = 'checkpoints/'+model+'.pt'
+            torch.save(ema_noise_pred_net.state_dict(), path)
 
         
 
@@ -213,5 +217,11 @@ print('Model saved to'+path)
 #t2: (4,1,1) balanced2, 50 epochs
 #t3: (4,1,1) balanced3, 50 epochs
 #t4: (4,1,1) balanced4, 50 epochs
+#t_4_1: same as t4
+#t_4_2: same as t4
+#t_5, t_5_1: (4,1,1) balanced4, 100 epochs
+#t_6, t_6_1: (4,1,1) balanced4, 200 epochs
+
+
 
 
