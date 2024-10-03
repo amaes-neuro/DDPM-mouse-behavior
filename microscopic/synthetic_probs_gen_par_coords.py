@@ -85,7 +85,6 @@ noise_scheduler = DDPMScheduler(
 #set up loop
 threat_values = [-0.2,-0.1,0,0.1,0.2,0.3,0.4]
 time_steps = 6
-time_shift = 0
 env = Mouse2DEnv(render_mode='rgb_array')
 
 file = open('data/'+dataset_name+'_coordinates.pickle', 'rb')
@@ -98,6 +97,7 @@ for h in range(len(coords)):
     
     location = coords[h,0:2]
     loc_avg = coords[h,2:4]
+    time_shift = coords[h,4]
 
     for i in range(2*len(threat_values)):    
         

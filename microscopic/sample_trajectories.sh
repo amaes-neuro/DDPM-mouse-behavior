@@ -9,6 +9,7 @@
 #SBATCH --partition=gpu
 #SBATCH --ntasks=1
 #SBATCH --mem=4G
+#SBATCH --gpus-per-node=1
 
 # variable declaration
 model="t_4"
