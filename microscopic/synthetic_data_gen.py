@@ -35,7 +35,7 @@ if not os.path.exists('data_synthetic/'+model):
 pred_horizon = 4
 obs_horizon = 1
 action_horizon = 1
-obs_dim = 5
+obs_dim = 8
 action_dim = 2
 
 # create network object
@@ -93,7 +93,7 @@ file = open(dataset_path+'episode_ends_'+dataset_name+'.pickle', 'rb')
 episode_ends = pickle.load(file) # Marks one-past the last index for each episode
 file.close()
 
-for j in range(78,93):
+for j in range(0,93):
     if j<7:
         food = 0
         threat = 0
