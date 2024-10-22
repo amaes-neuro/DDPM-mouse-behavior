@@ -107,7 +107,7 @@ _ = noise_pred_net.to(device)
 Train model
 """
 
-num_epochs = 50
+num_epochs = 200
 
 # Exponential Moving Average
 # accelerates training and improves stability
@@ -221,6 +221,8 @@ print('Model saved to'+path)
 #t_4_2: same as t4
 #t_5, t_5_1: (4,1,1) balanced4, 100 epochs
 #t_6, t_6_1: (4,1,1) balanced4, 200 epochs
+#t_7, t_7_1: (4,1,1) balanced7, 200 epochs
+#t_8, t_8_1: (4,1,1) balanced8, 200 epochs
 
 
 
