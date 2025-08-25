@@ -190,7 +190,5 @@ print('Save sampled actions in state:',data_dict['state'])
 with open('data_model_curves/'+model+'/samples/curve_'+sample+'.pickle', 'wb') as file:
     pickle.dump(data_dict, file)
 
-#do not forget that the actions generated here are not binarized
-#in the subsequent plotting I need to binarize the actions
 
 

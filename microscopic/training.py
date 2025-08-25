@@ -29,8 +29,8 @@ import os
 Load dataset
 """
 #model
-model = sys.argv[1]
-dataset_name = sys.argv[2]
+model = 't_401_6' #sys.argv[1]
+dataset_name = 'balanced4_x1' #sys.argv[2]
 
 # set path
 if not os.path.exists('checkpoints'):
@@ -38,7 +38,7 @@ if not os.path.exists('checkpoints'):
 
 
 # parameters
-pred_horizon = 4
+pred_horizon = 8
 obs_horizon = 1
 action_horizon = 1
 
@@ -107,7 +107,7 @@ _ = noise_pred_net.to(device)
 Train model
 """
 
-num_epochs = 200
+num_epochs = 800
 
 # Exponential Moving Average
 # accelerates training and improves stability
@@ -131,6 +131,7 @@ lr_scheduler = get_scheduler(
     num_training_steps=len(dataloader) * num_epochs
 )
 
+losses = []
 with tqdm(range(num_epochs), desc='Epoch') as tglobal:
     # epoch loop
     for epoch_idx in tglobal:
@@ -190,6 +191,7 @@ with tqdm(range(num_epochs), desc='Epoch') as tglobal:
                 epoch_loss.append(loss_cpu)
                 tepoch.set_postfix(loss=loss_cpu)
         tglobal.set_postfix(loss=np.mean(epoch_loss))
+        losses.append(np.mean(epoch_loss))
         if epoch_idx%20 == 0: #save checkpoints every 20 epochs
             ema_noise_pred_net = noise_pred_net
             path = 'checkpoints/'+model+'.pt'
@@ -207,6 +209,9 @@ path = 'checkpoints/'+model+'.pt'
 torch.save(ema_noise_pred_net.state_dict(), path)
 print('Model saved to'+path)
 
+#save loss
+with open('checkpoints/'+model+'_loss.pickle','wb') as file:
+	pickle.dump(losses,file)
 
 #Note that training does not interact with the environment.
 #So I have to take care that the data is set up such that it is compatible with the environment.
@@ -224,6 +229,7 @@ print('Model saved to'+path)
 #t_7, t_7_1: (4,1,1) balanced7, 200 epochs
 #t_8, t_8_1: (4,1,1) balanced8, 200 epochs
 
+#t_7_2: (8,1,1) balanced4, 200 epochs
 
-
-
+#t_100_0: (4,1,1)  TMT not encoded, using balanced4_s
+#t_200_0: (8,1,1) TMT encoded as A-B, using balanced4_b

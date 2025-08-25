@@ -24,7 +24,7 @@ import sys
 #load trained model
 model = sys.argv[1]
 dataset_name = sys.argv[2]
-grid_id = sys.argv[3]
+grid_id = int(sys.argv[3])
 
 path = 'checkpoints/'+model+'.pt'
 if torch.cuda.is_available():
@@ -206,8 +206,8 @@ for h in range(nb_histories):
         
 #save curve    
 data_dict = {'state': idx_hists, 'actions': curves}    
-print('Save sampled actions from grid point '+grid_id+' and history indices:',data_dict['state'])
-with open('data_model_curves/'+model+'/grid_sweep/curve_'+grid_id+'.pickle', 'wb') as file:
+print('Save sampled actions from grid point '+str(grid_id)+' and history indices:',data_dict['state'])
+with open('data_model_curves/'+model+'/grid_sweep/curve_'+str(grid_id)+'.pickle', 'wb') as file:
     pickle.dump(data_dict, file)
 
 

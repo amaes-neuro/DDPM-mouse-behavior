@@ -91,6 +91,11 @@ for i in range(5):
         phase_B[i,j] = np.mean(time_evol_B[i,j*window_step:j*window_step+window_length])
         phase_C[i,j] = np.mean(time_evol_C[i,j*window_step:j*window_step+window_length])
 
+
+with open('data/data_time_evolution.pickle', 'wb') as file:
+    pickle.dump(np.float32([phase_A,phase_B,phase_C]), file)
+
+
 colors = ['rosybrown','lightcoral','indianred','brown','darkred']
 plt.figure()
 for i in range(5):
@@ -99,9 +104,11 @@ for i in range(5):
     plt.plot(window_step*np.arange(2*((T-window_length)//window_step),3*((T-window_length)//window_step))/180,phase_C[i,:],color=colors[i])
 plt.vlines(window_step*((T-window_length)//window_step)/180,0,1,linestyles='--')
 plt.vlines(window_step*(2*((T-window_length)//window_step))/180,0,1,linestyles='--')
-plt.ylabel('fraction in left side of cage')    
+plt.ylabel('Fraction in left side of cage')    
 plt.xlabel('Time (mins)')
 
+plt.savefig('figures/time_evolution/data.pdf', format="pdf", bbox_inches="tight")
+plt.close()
 
 
 

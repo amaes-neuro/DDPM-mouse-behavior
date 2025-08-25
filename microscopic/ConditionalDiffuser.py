@@ -118,10 +118,10 @@ class ConditionalUnet1D(nn.Module):
     def __init__(self,
         input_dim,
         global_cond_dim,
-        diffusion_step_embed_dim=256,
-        down_dims=[256,512,1024],
-        kernel_size=5,
-        n_groups=8
+        diffusion_step_embed_dim=8,#256,
+        down_dims=[8,16,32],#[256,512,1024],
+        kernel_size=3,#5,
+        n_groups=1#8
         ):
         """
         input_dim: Dim of actions.
