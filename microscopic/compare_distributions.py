@@ -390,13 +390,17 @@ dataset_list = ['balanced0','balanced1','balanced2','balanced7','balanced8','bal
 model_list_TMT = ['t_100_','t_200_','t_300_','t_400_']
 dataset_list_TMT = ['balanced4_s','balanced4_b','balanced4_a','balanced4_x']
 
-model_list_400 = ['t_406_','t_400_','t_801_','t_402_','t_403_','t_404_','t_405_','t_500_']
-dataset_list_400 = ['balanced4_x6','balanced4_x','balanced7_x1','balanced4_x2','balanced4_x3','balanced4_x4','balanced4_x5','balanced4_x']
+model_list_400 = ['t_406_','t_400_','t_401_','t_402_','t_403_','t_404_','t_405_','t_500_']
+dataset_list_400 = ['balanced4_x6','balanced4_x','balanced4_x1','balanced4_x2','balanced4_x3','balanced4_x4','balanced4_x5','balanced4_x']
 
-save = '400'
-model_list = model_list_400
+model_list_800 = ['t_806_','t_800_','t_801_','t_802_','t_807_']
+dataset_list_800 = ['balanced7_x6','balanced7_x0','balanced7_x1','balanced7_x2','balanced7_x1']
+
+
+save = '800'
+model_list = model_list_800
 nb_ = len(model_list)
-dataset_list = dataset_list_400
+dataset_list = dataset_list_800
 trial_distances = []
 minutes_distances = []
 switch_distances = []
@@ -405,13 +409,13 @@ for i in range(nb_):
     dist1,dist2,dist3 = np.zeros((6,)),np.zeros((6,)),np.zeros((6,))
     for j in range(6):
         a,b,c = trial_distance(model_list[i]+str(j), dataset_list[i])
-        dist1[j] =  np.mean(c)#np.mean(np.hstack((a,b,c)))
+        dist1[j] =  np.mean(np.hstack((a,b,c)))
         
         a,b,c = minutes_distance(model_list[i]+str(j), dataset_list[i])
-        dist2[j] =  np.mean(c)#np.mean(np.hstack((a,b,c)))
+        dist2[j] =  np.mean(np.hstack((a,b,c)))
     
         a,b,c = switching_distance(model_list[i]+str(j), dataset_list[i])
-        dist3[j] =  np.nanmean(c)#np.nanmean(np.hstack((a,b,c)))
+        dist3[j] =  np.nanmean(np.hstack((a,b,c)))
         
     trial_distances.append(dist1)
     minutes_distances.append(dist2)
@@ -438,7 +442,7 @@ ax.spines[['right', 'top']].set_visible(False)
 
 plt.ylabel('2D Wasserstein distance')
 plt.title('Comparing trajectories of entire trials')
-plt.savefig('figures/model_quality/trial_distances_BC_C_'+save+'.pdf', format="pdf", bbox_inches="tight")
+plt.savefig('figures/model_quality/trial_distances_'+save+'.pdf', format="pdf", bbox_inches="tight")
 plt.show()
 
     
@@ -460,7 +464,7 @@ ax.spines[['right', 'top']].set_visible(False)
 
 plt.ylabel('Mean squared error')
 plt.title('Comparing the minute-averaged time-series of cage side location')
-plt.savefig('figures/model_quality/minutes_distances_BC_C_'+save+'.pdf', format="pdf", bbox_inches="tight")
+plt.savefig('figures/model_quality/minutes_distances_'+save+'.pdf', format="pdf", bbox_inches="tight")
 plt.show() 
     
     
@@ -482,7 +486,7 @@ ax.spines[['right', 'top']].set_visible(False)
 
 plt.ylabel('1D Wasserstein distance')
 plt.title('Comparing distributions of left and right side cage dwell times')
-plt.savefig('figures/model_quality/switch_distances_BC_C_'+save+'.pdf', format="pdf", bbox_inches="tight")
+plt.savefig('figures/model_quality/switch_distances_'+save+'.pdf', format="pdf", bbox_inches="tight")
 plt.show()  
     
     

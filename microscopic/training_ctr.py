@@ -2,7 +2,7 @@
 """
 Created on Thu Jun 12 14:25:13 2025
 
-Imitation learning with LSTM - we use this as a baseline model.
+Imitation learning with FF model - we use this as a baseline model.
 
 @author: amaes
 """
@@ -32,8 +32,8 @@ Load dataset
 """
 
 #model
-model = 't_500_5'#sys.argv[1]
-dataset_name = 'balanced4_x'#sys.argv[2]
+model = 't_807_5'#sys.argv[1]
+dataset_name = 'balanced7_x1'#sys.argv[2]
 
 file = open('data/episode_ends_'+dataset_name+'.pickle', 'rb')
 episode_ends = pickle.load(file) # Marks one-past the last index for each episode
@@ -138,7 +138,7 @@ else:
 model_net = FF_net(obs_dim,50,action_dim*pred_horizon)
 _ = model_net.to(device)
 
-
+print('Amount of parameters in model: '+str( sum(param.numel() for param in model_net.parameters()) ) )
 
 """
 Train model
@@ -203,7 +203,7 @@ plt.plot(costs[5:])
 plt.plot(test_cost[5:])
 
 
-#TODO  generate synthetic data (how bad will it be...)
+#generate synthetic data (how bad will it be...)
 path = 'checkpoints/'+model+'.pt'
 torch.save(model_net.state_dict(), path)
 print('Model saved to'+path)
@@ -278,7 +278,7 @@ for i in range(len(episode_ends)):
         agent_sensory_field = compute_sensory_field(state[0:2])
         dist_idx = np.sort(agent_sensory_field)
         state[2] = np.mean(dist_idx[0:6])
-        state[3:5] = (1-1/30)*state[3:5] + state[0:2]/30
+        state[3:5] = (1-1/20)*state[3:5] + state[0:2]/20
         state[5] += 1        
         
     with open('data_synthetic/'+model+'/states_synthetic_'+str(i)+'.pickle', 'wb') as file:
