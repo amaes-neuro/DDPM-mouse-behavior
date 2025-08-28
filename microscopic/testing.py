@@ -4,6 +4,8 @@ Created on Thu Mar 28 11:50:03 2024
 
 Test a trained model, it runs once, plots the trajectory and saves an animation.
 
+OUT OF DATE --- CHECK 
+
 @author: ahm8208
 """
 
@@ -21,17 +23,17 @@ import os
 import shapely
 
 #load trained model
-path = 'checkpoints/t3.pt'
+path = 'checkpoints/t_800_0.pt'
 if torch.cuda.is_available():
     state_dict = torch.load(path, map_location='cuda')
 else:
     state_dict = torch.load(path, map_location='cpu')
 
 #parameters
-pred_horizon = 4
+pred_horizon = 8
 obs_horizon = 1
 action_horizon = 1
-obs_dim = 27
+obs_dim = 8
 action_dim = 2
 
 # create network object
@@ -63,7 +65,7 @@ dataset = MouseTrajectoryDataset(
 stats = dataset.stats
 
 #noise scheduler
-num_diffusion_iters = 100
+num_diffusion_iters = 50
 noise_scheduler = DDPMScheduler(
     num_train_timesteps=num_diffusion_iters,
     # the choise of beta schedule has big impact on performance

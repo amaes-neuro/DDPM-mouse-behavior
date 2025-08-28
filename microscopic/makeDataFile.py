@@ -154,8 +154,8 @@ def generate_space(concentration, phase, subsample):
         agent_location = clip_to_box(agent_location, box)
         tempx = pd.DataFrame(agent_location[:,0])
         tempy = pd.DataFrame(agent_location[:,1])
-        agent_emax = tempx.ewm(alpha=1/10, adjust=False).mean()
-        agent_emay = tempy.ewm(alpha=1/10, adjust=False).mean()
+        agent_emax = tempx.ewm(alpha=1/20, adjust=False).mean()
+        agent_emay = tempy.ewm(alpha=1/20, adjust=False).mean()
         agent_action = agent_location[1:]-agent_location[0:-1]
         agent_location = agent_location[0:-1]
         agent_sensory_field, agent_directions, agent_sides = compute_multiple_states(agent_location, box, agent_action)
@@ -177,8 +177,8 @@ def generate_space(concentration, phase, subsample):
         #                     agent_sides,total_time,food_present,agent_threat))
         cum_sid = np.reshape(agent_sides[:,0]+agent_sides[:,1],(len(agent_sides),1))
         agent_avg = np.hstack((agent_emax.to_numpy(),agent_emay.to_numpy()))[0:-1]
-        #states_ = np.hstack((agent_location,food_present,agent_threat))
-        states_ = np.hstack((agent_location,walls_distance, agent_avg, total_time, food_present,agent_threat))
+        states_ = np.hstack((agent_location,walls_distance, total_time,food_present,agent_threat))
+        #states_ = np.hstack((agent_location,walls_distance, agent_avg, total_time, food_present,agent_threat))
 
         
         states.append(states_)
@@ -224,12 +224,12 @@ def main():
     """
     idx_ends = np.cumsum(idx_ends)
     print(idx_ends)
-    states[idx_ends[6]:,7] += 0.2 - np.min(states[idx_ends[6]:,7]) #for x only, to make tmt state nonnegative earlier i did 0.05
-    with open('data/states_balanced7_x2.pickle', 'wb') as file:
+    states[idx_ends[6]:,5] += 0.2 - np.min(states[idx_ends[6]:,5]) #for x only, to make tmt state nonnegative earlier i did 0.05
+    with open('data/states_balanced7_x5.pickle', 'wb') as file:
         pickle.dump(np.float32(states), file)
-    with open('data/actions_balanced7_x2.pickle', 'wb') as file:
+    with open('data/actions_balanced7_x5.pickle', 'wb') as file:
         pickle.dump(np.float32(actions), file)
-    with open('data/episode_ends_balanced7_x2.pickle', 'wb') as file:
+    with open('data/episode_ends_balanced7_x5.pickle', 'wb') as file:
         pickle.dump(idx_ends, file)
     print('Preprocessing done... Data saved.')
 
@@ -275,7 +275,7 @@ set of models:
 #balanced4_x: 8 states like balanced 4, but TMT is encoded (2A-B_C)/2 + shift to make it nonnegative
 #in theory I can add a binary state indicating presence of TMT
 
-#balanced7_x1 is the same as balanced4_x1 except more separation in TMT encoding
+#balanced7_x1 is the same as balanced4_x1 except more separation in TMT encoding (0.05 -> 0.2)
 
 # x : 30
 # x1 : 20

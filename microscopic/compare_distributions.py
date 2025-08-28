@@ -393,8 +393,8 @@ dataset_list_TMT = ['balanced4_s','balanced4_b','balanced4_a','balanced4_x']
 model_list_400 = ['t_406_','t_400_','t_401_','t_402_','t_403_','t_404_','t_405_','t_500_']
 dataset_list_400 = ['balanced4_x6','balanced4_x','balanced4_x1','balanced4_x2','balanced4_x3','balanced4_x4','balanced4_x5','balanced4_x']
 
-model_list_800 = ['t_806_','t_800_','t_801_','t_802_','t_807_']
-dataset_list_800 = ['balanced7_x6','balanced7_x0','balanced7_x1','balanced7_x2','balanced7_x1']
+model_list_800 = ['t_806_','t_800_','t_801_','t_802_','t_805_','t_807_']
+dataset_list_800 = ['balanced7_x6','balanced7_x0','balanced7_x1','balanced7_x2','balanced7_x5','balanced7_x1']
 
 
 save = '800'
