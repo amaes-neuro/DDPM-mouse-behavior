@@ -36,10 +36,10 @@ if not os.path.exists('data_model_curves/'+model+'/samples'):
     os.makedirs('data_model_curves/'+model+'/samples')
 
 #parameters
-pred_horizon = 4
+pred_horizon = 8
 obs_horizon = 1
 action_horizon = 1
-obs_dim = 6
+obs_dim = 8
 action_dim = 2
 
 # create network object
@@ -85,26 +85,21 @@ noise_scheduler = DDPMScheduler(
 )
 
 #set up loop
-threat_values = [0,0.15,0.3,0.45]
+threat_values = [0]
 time_steps = 90
 time_shift = 0
 env = Mouse2DEnv(render_mode='rgb_array')
 
-curves = np.zeros((4*len(threat_values),time_steps,2))
-for i in range(4*len(threat_values)):    
+curves = np.zeros((2*len(threat_values),time_steps,2))
+for i in range(2*len(threat_values)):    
     
     threat = threat_values[i%len(threat_values)]
-    location = np.array([40,-5])
-    if i>=2*len(threat_values):
-        food = 1
-    else:
-        food = 0
+    location = np.array([40,-2])
+    food = 0
     if i<len(threat_values):
-        loc_avg = np.array([20,5])
-    elif i>=2*len(threat_values) and i<3*len(threat_values):
-        loc_avg = np.array([20,5])
+        loc_avg = np.array([18,-1]) #coming from left side #40: (16,0) 30: (18,-1)  20: (18,-1) 10: (30,-1)
     else:
-        loc_avg = np.array([60,5])
+        loc_avg = np.array([54,-1]) #coming from right side #40: (64,-2) 30: (57,-3) 20: (54,-1) 10: (52,-2)
     
     
     #set up state
@@ -190,5 +185,7 @@ print('Save sampled actions in state:',data_dict['state'])
 with open('data_model_curves/'+model+'/samples/curve_'+sample+'.pickle', 'wb') as file:
     pickle.dump(data_dict, file)
 
+#do not forget that the actions generated here are not binarized
+#in the subsequent plotting I need to binarize the actions
 
 

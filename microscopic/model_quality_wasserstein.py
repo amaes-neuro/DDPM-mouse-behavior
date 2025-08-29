@@ -83,6 +83,13 @@ dataset_list = ['40','30','20', '10', '30', '30', '30']
 nb_steps = 15
 clrs = ['b','g','r','y','black','grey','orange']
 
+model_list = ['t_806_','t_800_','t_801_', 't_802_','t_805_','t_807_']
+centroid_list = [[16,0], [16,1], [21,0], [30,-1], [16,1], [16,1], [16,1]]
+dataset_list = ['40','30','20', '10', '20', '20']
+nb_steps = 15
+clrs = ['b','g','r','y','black','grey']
+
+
 fig, ax = plt.subplots()
 for i in range(len(model_list)):
     print('Processing model '+model_list[i])
@@ -98,7 +105,7 @@ ax.spines[['right', 'top']].set_visible(False)
 plt.xlabel('Time (s)')
 plt.ylabel('2D Wasserstein distance')
 plt.title('Comparing models of mice passing through the center from the left side')
-plt.savefig('figures/model_quality/seconds_distances_400L.pdf', format="pdf", bbox_inches="tight")
+plt.savefig('figures/model_quality/seconds_distances_800L.pdf', format="pdf", bbox_inches="tight")
 plt.legend()
 
 
@@ -120,7 +127,7 @@ ax.spines[['right', 'top']].set_visible(False)
 plt.xlabel('Time (s)')
 plt.ylabel('2D Wasserstein distance')
 plt.title('Comparing models of mice passing through the center from the right side')
-plt.savefig('figures/model_quality/seconds_distances_400R.pdf', format="pdf", bbox_inches="tight")
+plt.savefig('figures/model_quality/seconds_distances_800R.pdf', format="pdf", bbox_inches="tight")
 plt.legend()
 
 
